@@ -1,0 +1,3427 @@
+<!DOCTYPE html>
+<html lang="vi" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IT 4.0 Learning Hub - Thư viện Học tập Cá nhân</title>
+  <!-- Google Fonts: Be Vietnam Pro & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons via CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Be Vietnam Pro"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              300: '#7dd3fc',
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              800: '#075985',
+              900: '#0c4a6e',
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    /* Custom scrollbar mượt mà */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.4);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(14, 165, 233, 0.7);
+    }
+
+    /* Hiệu ứng chuyển động nhẹ nhàng cho các thẻ sơ đồ */
+    .diagram-node {
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .diagram-node:hover {
+      transform: translateY(-2px);
+    }
+    .diagram-node.active-node {
+      ring: 2px;
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.35);
+    }
+
+    /* Chevron shape cho Bài 1 */
+    @media (min-width: 768px) {
+      .chevron-card {
+        clip-path: polygon(0% 0%, 92% 0%, 100% 50%, 92% 100%, 0% 100%, 6% 50%);
+      }
+      .chevron-card-first {
+        clip-path: polygon(0% 0%, 92% 0%, 100% 50%, 92% 100%, 0% 100%);
+      }
+    }
+
+    /* Hiệu ứng fade-in khi chuyển bài */
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animate-content {
+      animation: fadeSlideUp 0.3s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 font-sans antialiased transition-colors duration-200 selection:bg-sky-500 selection:text-white">
+
+  <!-- Mobile Backdrop Overlay -->
+  <div id="mobileOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-30 hidden lg:hidden transition-opacity" onclick="toggleSidebar(false)"></div>
+
+  <div class="flex min-h-screen">
+    <!-- ================= SIDEBAR BÊN TRÁI ================= -->
+    <aside id="sidebar" class="fixed lg:sticky top-0 left-0 z-40 h-screen w-80 bg-white dark:bg-slate-900 border-r border-slate-200/80 dark:border-slate-800 flex flex-col transition-transform duration-300 -translate-x-full lg:translate-x-0 shadow-xl lg:shadow-none">
+      
+      <!-- 1. Logo & Tiêu đề -->
+      <div class="p-5 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+        <div class="flex items-center gap-3 cursor-pointer" onclick="selectView('overview')">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 via-cyan-500 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-sky-500/20 shrink-0">
+            <i data-lucide="cpu" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h1 class="font-extrabold text-base tracking-tight text-slate-900 dark:text-white leading-tight">IT 4.0 Learning Hub</h1>
+            <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Thư viện Học tập Cá nhân</p>
+          </div>
+        </div>
+        <button onclick="toggleSidebar(false)" class="lg:hidden p-2 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800" aria-label="Đóng menu">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- 2. Thanh Tiến độ học tập -->
+      <div class="px-5 py-4 bg-slate-50/70 dark:bg-slate-800/40 border-b border-slate-100 dark:border-slate-800/80">
+        <div class="flex items-center justify-between text-xs font-semibold mb-2">
+          <span class="text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+            <i data-lucide="award" class="w-3.5 h-3.5 text-sky-500"></i>
+            Tiến độ hoàn thành
+          </span>
+          <span id="progressCountText" class="text-sky-600 dark:text-sky-400 font-bold">0/8 chuyên đề</span>
+        </div>
+        <div class="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+          <div id="progressBar" class="h-full bg-gradient-to-r from-sky-500 to-cyan-400 rounded-full transition-all duration-500 ease-out" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- 3. Ô Tìm kiếm nhanh & 4. Bộ lọc trạng thái -->
+      <div class="p-4 space-y-3 border-b border-slate-100 dark:border-slate-800/80">
+        <div class="relative">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+          <input
+            id="searchInput"
+            type="text"
+            placeholder="Tìm từ khóa, khái niệm, ví dụ..."
+            oninput="handleSearch(this.value)"
+            class="w-full pl-9 pr-8 py-2 text-xs bg-slate-100/80 dark:bg-slate-800 border border-transparent focus:border-sky-500 focus:bg-white dark:focus:bg-slate-900 rounded-xl outline-none transition-all text-slate-800 dark:text-slate-100 placeholder:text-slate-400"
+          />
+          <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+            <i data-lucide="x-circle" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="grid grid-cols-3 gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs font-medium">
+          <button onclick="setFilter('all')" id="filter-all" class="filter-tab py-1.5 px-2 rounded-lg transition-all bg-white dark:bg-slate-700 text-sky-600 dark:text-sky-400 shadow-xs font-semibold">
+            Tất cả
+          </button>
+          <button onclick="setFilter('uncompleted')" id="filter-uncompleted" class="filter-tab py-1.5 px-2 rounded-lg transition-all text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+            Chưa học
+          </button>
+          <button onclick="setFilter('completed')" id="filter-completed" class="filter-tab py-1.5 px-2 rounded-lg transition-all text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+            Đã xong
+          </button>
+        </div>
+      </div>
+
+      <!-- 5. Danh mục Chuyên đề -->
+      <div class="flex-1 overflow-y-auto px-3 py-3 space-y-2">
+        <div class="px-2 flex items-center justify-between">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Danh mục 8 Chuyên đề</span>
+          <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 border border-sky-200/60 dark:border-sky-800/60">2025–2026</span>
+        </div>
+
+        <!-- Nút Bức tranh toàn cảnh IT 4.0 -->
+        <button
+          id="nav-overview"
+          onclick="selectView('overview')"
+          class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all group border border-transparent"
+        >
+          <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+            <i data-lucide="layers" class="w-4 h-4"></i>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="text-xs font-bold truncate">Bức tranh toàn cảnh IT 4.0</div>
+            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Tổng kết 8 tầng kiến thức</div>
+          </div>
+        </button>
+
+        <div class="h-px bg-slate-100 dark:bg-slate-800/80 my-1"></div>
+
+        <!-- Danh sách 8 bài học (render bằng JS) -->
+        <div id="lessonList" class="space-y-1"></div>
+      </div>
+
+      <!-- 6. Footer Sidebar -->
+      <div class="p-4 border-t border-slate-200/80 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/80 space-y-2.5">
+        <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
+          <span class="flex items-center gap-1.5 font-medium text-emerald-600 dark:text-emerald-400">
+            <i data-lucide="cloud-check" class="w-3.5 h-3.5"></i>
+            Lưu tự động LocalStorage
+          </span>
+          <span class="font-mono text-[10px] opacity-75">v4.0</span>
+        </div>
+        <button
+          onclick="openResetModal()"
+          class="w-full py-2 px-3 rounded-xl text-xs font-semibold text-rose-600 dark:text-rose-400 bg-rose-50/80 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-950/70 border border-rose-200/60 dark:border-rose-900/50 flex items-center justify-center gap-1.5 transition-colors"
+        >
+          <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+          Đặt lại dữ liệu
+        </button>
+      </div>
+    </aside>
+
+    <!-- ================= KHU VỰC NỘI DUNG CHÍNH ================= -->
+    <div class="flex-1 flex flex-col min-w-0">
+      
+      <!-- Header phía trên khu vực nội dung chính -->
+      <header class="sticky top-0 z-20 bg-white/85 dark:bg-slate-900/85 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 px-4 sm:px-8 h-16 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3 min-w-0">
+          <button
+            onclick="toggleSidebar(true)"
+            class="lg:hidden p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700"
+            aria-label="Mở danh mục"
+          >
+            <i data-lucide="menu" class="w-5 h-5"></i>
+          </button>
+
+          <!-- Breadcrumb động -->
+          <nav class="flex items-center gap-2 text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 truncate">
+            <span class="hidden sm:inline hover:text-sky-600 dark:hover:text-sky-400 cursor-pointer transition-colors" onclick="selectView('overview')">
+              Hành trình Công nghệ Thông tin 4.0
+            </span>
+            <span class="sm:hidden font-semibold text-slate-700 dark:text-slate-200" onclick="selectView('overview')">IT 4.0</span>
+            <i data-lucide="chevron-right" class="w-4 h-4 shrink-0 text-slate-400"></i>
+            <span id="breadcrumbCurrent" class="font-bold text-slate-900 dark:text-white truncate">Bức tranh toàn cảnh</span>
+          </nav>
+        </div>
+
+        <!-- Các nút thao tác nhanh bên phải -->
+        <div class="flex items-center gap-2 shrink-0">
+          <!-- Nút chuyển đổi Dark / Light Mode -->
+          <button
+            onclick="toggleTheme()"
+            id="themeToggleBtn"
+            title="Chuyển đổi giao diện Sáng / Tối"
+            class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors border border-slate-200/60 dark:border-slate-700"
+          >
+            <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
+            <i data-lucide="sun" class="w-4 h-4 hidden dark:block text-amber-400"></i>
+          </button>
+
+          <!-- Nút điều hướng Bài trước / Bài tiếp theo -->
+          <div class="flex items-center gap-1.5">
+            <button
+              id="prevBtn"
+              onclick="navigateLesson(-1)"
+              class="px-3 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 flex items-center gap-1 transition-all disabled:opacity-40 disabled:pointer-events-none"
+            >
+              <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+              <span class="hidden sm:inline">Bài trước</span>
+            </button>
+            <button
+              id="nextBtn"
+              onclick="navigateLesson(1)"
+              class="px-3 py-2 rounded-xl text-xs font-semibold bg-sky-500 hover:bg-sky-600 text-white shadow-xs shadow-sky-500/25 flex items-center gap-1 transition-all disabled:opacity-40 disabled:pointer-events-none"
+            >
+              <span class="hidden sm:inline">Bài tiếp theo</span>
+              <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Content Container -->
+      <main id="mainContent" class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-8 py-6 sm:py-8 space-y-8">
+        <!-- Nội dung được render động tại đây -->
+      </main>
+
+      <!-- Footer nhỏ gọn -->
+      <footer class="max-w-5xl w-full mx-auto px-4 sm:px-8 py-6 border-t border-slate-200/70 dark:border-slate-800/80 text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500 dark:text-slate-400">
+        <div>
+          <span class="font-semibold text-slate-700 dark:text-slate-300">Hành Trình Công Nghệ Thông Tin 4.0</span> — Từ Nền Tảng Phần Cứng Đến Trí Tuệ Nhân Tạo & Đạo Đức Số (Bài 1 - Bài 8)
+        </div>
+        <div class="font-mono text-[11px] text-sky-600 dark:text-sky-400">IT 4.0 Learning Hub</div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ================= MODAL XÁC NHẬN ĐẶT LẠI DỮ LIỆU ================= -->
+  <div id="resetModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl animate-content">
+      <div class="flex items-start gap-4">
+        <div class="w-11 h-11 rounded-2xl bg-rose-100 dark:bg-rose-950/80 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+          <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+        </div>
+        <div class="flex-1">
+          <h3 class="text-lg font-bold text-slate-900 dark:text-white">Đặt lại dữ liệu học tập?</h3>
+          <p class="mt-2 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+            Hành động này sẽ xóa toàn bộ trạng thái <strong>Đã hoàn thành</strong> của 8 chuyên đề và tất cả <strong>Ghi chú cá nhân</strong> đã lưu trên trình duyệt này. Bạn không thể hoàn tác sau khi xác nhận.
+          </p>
+        </div>
+      </div>
+      <div class="mt-6 flex items-center justify-end gap-3">
+        <button
+          onclick="closeResetModal()"
+          class="px-4 py-2.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors"
+        >
+          Hủy
+        </button>
+        <button
+          onclick="confirmResetData()"
+          class="px-4 py-2.5 rounded-xl text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white shadow-md shadow-rose-600/20 transition-colors"
+        >
+          Xác nhận đặt lại
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= DỮ LIỆU & LOGIC ỨNG DỤNG ================= -->
+  <script>
+    // Dữ liệu chuẩn xác 100% từ tài liệu PDF "Hành_Trình_IT_4.0.pdf"
+    const LESSONS_DATA = [
+      {
+        id: 1,
+        shortTitle: "Nhập môn CNTT & Kỷ nguyên 4.0",
+        title: "Nhập môn CNTT & Kỷ nguyên Số 4.0",
+        subtitle: "Tiến hóa Công nghiệp & Chuyển đổi số",
+        icon: "cpu",
+        summary: "Khám phá sự tiến hóa từ cuộc Cách mạng Công nghiệp 1.0 đến 4.0, bản chất của chuyển đổi số toàn diện cùng các ngành nghề và kỹ năng cốt lõi trong kỷ nguyên thông minh.",
+        diagramTitle: "Sơ đồ Tiến hóa Công nghiệp",
+        diagramHint: "Nhấp vào từng giai đoạn cách mạng công nghiệp để xem đặc trưng cốt lõi",
+        takeaways: [
+          "CMCN 4.0 xoay quanh lõi kết nối số, AI, Big Data và hệ thống thông minh.",
+          "CNTT 4.0 tự động hóa quy trình lặp lại và kết nối vạn vật qua Internet.",
+          "Chuyển đổi số là thay đổi toàn diện cách vận hành, không chỉ công nghệ.",
+          "Ngành nghề mũi nhọn mới: Kỹ sư AI, Data Analyst, Cloud SysAdmin.",
+          "Kỹ năng cốt lõi: Tư duy lập trình, giải quyết vấn đề, tự học liên tục."
+        ],
+        caseStudy: {
+          title: "Chuyển đổi số doanh nghiệp",
+          tag: "Ứng dụng thực tế",
+          content: "Không chỉ là mua sắm thiết bị. Đó là quá trình số hóa quy trình làm việc thủ công lên hệ thống Cloud, dùng cảm biến (IoT) thu thập dữ liệu và AI đề ra quyết định, tạo ra một phương thức quản lý và vận hành hoàn toàn mới."
+        }
+      },
+      {
+        id: 2,
+        shortTitle: "Phần cứng & Kiến trúc Máy tính",
+        title: "Nền tảng Phần cứng & Kiến trúc Máy tính (von Neumann)",
+        subtitle: "Input → Process (CPU & RAM) → Output ↔ Storage",
+        icon: "hard-drive",
+        summary: "Hiểu rõ kiến trúc cốt lõi của máy tính hiện đại theo mô hình von Neumann, cơ chế phối hợp giữa khối xử lý trung tâm CPU, bộ nhớ tạm RAM và hệ thống lưu trữ SSD/ROM.",
+        diagramTitle: "Kiến trúc cốt lõi của Máy tính (von Neumann)",
+        diagramHint: "Nhấp vào từng thành phần phần cứng để tìm hiểu vai trò trong luồng dữ liệu",
+        takeaways: [
+          "Luồng dữ liệu chuẩn: Input -> Process -> Output -> Storage.",
+          "CPU: Bộ não thực hiện phép tính; sức mạnh đo bằng GHz và số nhân.",
+          "RAM: Truy xuất cực nhanh, mất dữ liệu khi tắt nguồn, quyết định đa nhiệm.",
+          "ROM: Nơi lưu trữ chương trình khởi động sống còn (BIOS/UEFI).",
+          "Storage: Ổ cứng SSD hiện đại ưu việt hơn HDD về tốc độ và độ bền."
+        ],
+        caseStudy: {
+          title: "Lựa chọn máy tính cho sinh viên CNTT",
+          tag: "Tư vấn cấu hình thực tế",
+          content: "Bỏ qua ngoại hình hào nhoáng. Ưu tiên lõi xử lý đa nhiệm với CPU đa nhân (Core i5/i7 hoặc Ryzen 5/7), RAM tối thiểu 16GB để phục vụ lập trình/chạy máy ảo, và ổ cứng SSD để tăng tốc độ truy xuất dữ liệu tối đa."
+        }
+      },
+      {
+        id: 3,
+        shortTitle: "Hệ điều hành & Môi trường số",
+        title: "Hệ điều hành & Chồng lớp Môi trường số",
+        subtitle: "Từ Phần cứng đến Hệ điều hành, Ảo hóa & AI-Integrated OS",
+        icon: "layers",
+        summary: "Phân tích kiến trúc phân lớp giữa Phần cứng, Hệ điều hành (OS) và Ứng dụng/Ảo hóa, đồng thời nắm bắt xu hướng hệ sinh thái hợp nhất và OS tích hợp AI.",
+        diagramTitle: "Chồng lớp Môi trường số (Layer Stack)",
+        diagramHint: "Nhấp vào từng tầng trong chồng lớp hoặc khối xu hướng để xem phân tích",
+        takeaways: [
+          "OS là nền tảng điều phối tài nguyên phần cứng & ứng dụng.",
+          "Đa nền tảng giúp đồng bộ dữ liệu liền mạch giữa nhiều thiết bị.",
+          "Hệ sinh thái hợp nhất tạo trải nghiệm xuyên suốt.",
+          "VM = Bảo mật & Cách ly; Docker = Linh hoạt & Tốc độ.",
+          "Tương lai: AI-Integrated OS tự động hóa tác vụ cốt lõi."
+        ],
+        caseStudy: {
+          title: "Ảo hóa (VM) vs. Container hóa (Docker)",
+          tag: "So sánh công nghệ triển khai",
+          content: "Virtual Machine (VM): Sử dụng khi cần môi trường cách ly, an toàn bảo mật tuyệt đối. Docker (Container): Sử dụng khi cần đóng gói phần mềm nhẹ nhàng, linh hoạt để triển khai với tốc độ cao lên Cloud.",
+          comparison: [
+            { label: "Virtual Machine (VM)", desc: "Sử dụng khi cần môi trường cách ly, an toàn bảo mật tuyệt đối." },
+            { label: "Docker (Container)", desc: "Sử dụng khi cần đóng gói phần mềm nhẹ nhàng, linh hoạt để triển khai với tốc độ cao lên Cloud." }
+          ]
+        }
+      },
+      {
+        id: 4,
+        shortTitle: "Phần mềm & Điện toán Đám mây",
+        title: "Phần mềm & Điện toán Đám mây (Cloud Computing)",
+        subtitle: "Kim tự tháp IaaS – PaaS – SaaS & 5 Đặc tính NIST",
+        icon: "cloud",
+        summary: "Nắm vững cấu trúc lõi của phần mềm, 5 đặc tính tiêu chuẩn NIST của điện toán đám mây, mô hình phân tầng dịch vụ IaaS → PaaS → SaaS và các hình thức triển khai Cloud.",
+        diagramTitle: "Kim Tự Tháp Điện Toán Đám Mây",
+        diagramHint: "Nhấp vào từng tầng của Kim tự tháp, 5 Đặc tính NIST hoặc Lõi phần mềm",
+        takeaways: [
+          "Phần mềm: Chia thành PM Hệ thống (nền tảng) và PM Ứng dụng (chuyên biệt).",
+          "5 Đặc tính Cloud: Truy cập rộng, tự phục vụ, co giãn, đo lường, dùng chung.",
+          "Cấu trúc dịch vụ: IaaS -> PaaS -> SaaS.",
+          "Triển khai: Public (Công cộng), Private (Riêng tư), Hybrid (Lai), Multi (Đa đám mây).",
+          "PaaS: Nhà cung cấp lo hạ tầng, lập trình viên chỉ cần tập trung viết code."
+        ],
+        caseStudy: {
+          title: "Phân biệt 3 Lớp Cloud",
+          tag: "Mô hình dịch vụ đám mây",
+          content: "IaaS: Thuê máy chủ ảo trống trên Amazon EC2. PaaS: Dùng môi trường có sẵn database/dev-tools để code app. SaaS: Dùng ngay Google Workspace / Microsoft 365 trên web.",
+          table: [
+            { tier: "IaaS", example: "Thuê máy chủ ảo trống trên Amazon EC2." },
+            { tier: "PaaS", example: "Dùng môi trường có sẵn database/dev-tools để code app." },
+            { tier: "SaaS", example: "Dùng ngay Google Workspace / Microsoft 365 trên web." }
+          ]
+        }
+      },
+      {
+        id: 5,
+        shortTitle: "Mạng máy tính, Internet & IoT / 6G",
+        title: "Mạng máy tính, Internet & Kết nối Vạn vật (IoT / 6G)",
+        subtitle: "Sự hội tụ của Mạng lưới số & Tầm nhìn tương lai 6G",
+        icon: "globe",
+        summary: "Phân biệt rõ hạ tầng mạng Internet và không gian thông tin WWW, khám phá sự bùng nổ của Internet vạn vật (IoT) và mạng di động thế hệ mới 6G.",
+        diagramTitle: "Sự Hội Tụ Của Mạng Lưới Số",
+        diagramHint: "Nhấp vào từng nút mạng để khám phá mối liên kết trong hệ sinh thái số",
+        takeaways: [
+          "Mạng máy tính: Hạ tầng kết nối thiết bị để chia sẻ tài nguyên.",
+          "Internet (hạ tầng mạng) và WWW (không gian thông tin) là khác biệt.",
+          "Mạng di động đang tiến hóa mạnh mẽ, hướng tới công nghệ đột phá 6G.",
+          "IoT: Biến mọi đồ vật vật lý thành thiết bị số có khả năng giao tiếp.",
+          "Kỹ năng sống còn: Ý thức sử dụng Internet an toàn và hiệu quả."
+        ],
+        caseStudy: {
+          title: "IoT Trong Thành Phố Thông Minh",
+          tag: "Hạ tầng kết nối vạn vật",
+          content: "Không chỉ smartphone kết nối mạng. Đèn giao thông, cảm biến thời tiết, camera và xe tự lái liên tục trao đổi dữ liệu qua mạng di động tốc độ cao để điều tiết giao thông và tối ưu năng lượng theo thời gian thực."
+        }
+      },
+      {
+        id: 6,
+        shortTitle: "Tư duy Lập trình & Tự động hóa",
+        title: "Tư duy Lập trình & Phân lớp Tự động hóa",
+        subtitle: "Quy trình 3 bước tư duy & Phân lớp BPA – RPA – IaC",
+        icon: "code-2",
+        summary: "Rèn luyện tư duy giải quyết vấn đề theo từng bước chính xác cho máy tính, phân biệt 3 cấp độ tự động hóa (BPA, RPA, IaC) và xu hướng Low-code, No-code, Vibe-code.",
+        diagramTitle: "Tư Duy Lập Trình & Phân Lớp Tự Động Hóa",
+        diagramHint: "Nhấp vào từng bước tư duy hoặc cấp độ tự động hóa để xem giải thích",
+        takeaways: [
+          "Tư duy lập trình: Tìm bản chất và xây dựng chỉ dẫn từng bước chính xác.",
+          "Máy tính không tự có trí tuệ, nó chỉ khuếch đại trí tuệ con người.",
+          "3 Cấp độ tự động hóa: Doanh nghiệp (BPA), Quy trình (RPA), Hạ tầng (IaC).",
+          "Xu hướng: Low-code, No-code và Vibe-code giúp triển khai cực nhanh.",
+          "Mục tiêu tối thượng: Tối ưu thời gian, loại bỏ các công việc lặp lại."
+        ],
+        caseStudy: {
+          title: "Tự Động Hóa Onboarding (RPA/BPA)",
+          tag: "Quy trình tự động hóa doanh nghiệp",
+          content: "Nhân viên mới nhận việc -> Hệ thống tự động đọc thông tin từ Database -> Tự tạo email nội bộ, Tự động cấp quyền phần mềm, Gửi lịch đào tạo. Không cần con người can thiệp thủ công, tiết kiệm thời gian chờ.",
+          steps: [
+            "Nhân viên mới nhận việc",
+            "Hệ thống tự động đọc thông tin từ Database",
+            "Tự tạo email nội bộ • Tự động cấp quyền phần mềm • Gửi lịch đào tạo"
+          ]
+        }
+      },
+      {
+        id: 7,
+        shortTitle: "AI, Big Data & Prompt Engineering",
+        title: "Trí tuệ Nhân tạo (AI), Big Data & Prompt Engineering",
+        subtitle: "Cỗ máy Trí tuệ Nhân tạo & Kỹ thuật giao tiếp AI hiệu quả",
+        icon: "brain-circuit",
+        summary: "Hiểu cơ chế vận hành của cỗ máy AI thông qua ẩn dụ Động cơ: Big Data là nhiên liệu, AI là lõi động cơ, và Chính sách Lấy Con Người Làm Trung Tâm là vô-lăng điều hướng.",
+        diagramTitle: "Cỗ Máy Trí Tuệ Nhân Tạo (Engine Metaphor)",
+        diagramHint: "Nhấp vào Nhiên liệu, Động cơ, Vô-lăng hoặc Lực đẩy để xem vai trò từng bộ phận",
+        takeaways: [
+          "Big Data là \"nguyên liệu thô\" vô giá của thời đại 4.0.",
+          "AI là \"động cơ\" chuyển hóa dữ liệu thành giá trị hữu ích.",
+          "Chính sách \"Con người làm trung tâm\" là vô-lăng định hướng.",
+          "Nắm vững Prompt Engineering là kỹ năng thiết yếu để giao tiếp với AI.",
+          "Hệ sinh thái dữ liệu bền vững là nền tảng cốt lõi của quốc gia."
+        ],
+        caseStudy: {
+          title: "Prompt Engineering Trong Công Việc",
+          tag: "Kỹ năng thực chiến với AI",
+          content: "Đừng ra lệnh chung chung. Viết một Prompt hoàn chỉnh gồm 4 yếu tố: Vai trò (Role) + Bối cảnh (Context) + Tác vụ chi tiết (Task) + Định dạng đầu ra (Format) để AI khai thác kho dữ liệu sắc bén nhất.",
+          formula: ["Vai trò (Role)", "Bối cảnh (Context)", "Tác vụ chi tiết (Task)", "Định dạng đầu ra (Format)"]
+        }
+      },
+      {
+        id: 8,
+        shortTitle: "An toàn Thông tin & Đạo đức Số",
+        title: "An toàn Thông tin, Pháp luật & Đạo đức Số",
+        subtitle: "Hệ thống phòng thủ đa lớp, ISMS (ISO 27000) & Chống Deepfake",
+        icon: "shield-check",
+        summary: "Xây dựng lá chắn bảo vệ toàn diện trên không gian mạng từ lõi Tam giác CIA, hệ thống quản lý an toàn thông tin ISMS (ISO 27000) đến đạo đức số và hành lang pháp lý Việt Nam.",
+        diagramTitle: "Hệ Thống Phòng Thủ & Đạo Đức Số",
+        diagramHint: "Nhấp vào từng vòng tròn bảo vệ từ ngoài vào trong để xem chi tiết lớp phòng thủ",
+        takeaways: [
+          "ISMS là phương pháp quản lý an ninh bài bản dựa trên đánh giá rủi ro.",
+          "Triển khai an toàn thông tin cần nhận thức, phân công và cải tiến liên tục.",
+          "Nhận diện và đối phó Deepfake là thách thức mới về đạo đức và kỹ thuật.",
+          "Pháp luật VN: Luật An ninh mạng, Luật AI, Luật Bảo vệ dữ liệu cá nhân.",
+          "Đạo đức số và trách nhiệm số là yêu cầu bắt buộc trên không gian mạng."
+        ],
+        caseStudy: {
+          title: "Triển Khai ISMS Tại Tổ Chức",
+          tag: "Quản trị rủi ro chủ động",
+          content: "Áp dụng hệ thống ISMS để đánh giá rủi ro liên tục. Chuyển từ trạng thái thụ động (bị tấn công mới khắc phục) sang chủ động phân công trách nhiệm, bịt lỗ hổng, bảo vệ tài sản thông tin từ khâu thiết kế."
+        }
+      }
+    ];
+
+    // Dữ liệu 8 tầng Bức tranh toàn cảnh (Trang 10 PDF)
+    const OVERVIEW_LAYERS = [
+      {
+        level: 8,
+        lessonId: 8,
+        title: "Tầng Quản trị & Đạo đức (Bài 8)",
+        desc: "An toàn thông tin, Pháp luật, Con người làm trung tâm.",
+        color: "from-rose-500 to-orange-500",
+        badgeBg: "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20"
+      },
+      {
+        level: 7,
+        lessonId: 7,
+        title: "Tầng Thông minh (Bài 7)",
+        desc: "AI, Big Data, Prompt Engineering.",
+        color: "from-violet-500 to-purple-600",
+        badgeBg: "bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-500/20"
+      },
+      {
+        level: 6,
+        lessonId: 6,
+        title: "Tầng Logic (Bài 6)",
+        desc: "Tư duy lập trình, Low-code, Tự động hóa (BPA, RPA).",
+        color: "from-indigo-500 to-blue-600",
+        badgeBg: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20"
+      },
+      {
+        level: 5,
+        lessonId: 5,
+        title: "Tầng Kết nối (Bài 5)",
+        desc: "Mạng máy tính, Internet, 6G, IoT.",
+        color: "from-sky-500 to-cyan-500",
+        badgeBg: "bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20"
+      },
+      {
+        level: 4,
+        lessonId: 4,
+        title: "Tầng Ứng dụng & Dịch vụ (Bài 4)",
+        desc: "Phần mềm, Cloud (IaaS, PaaS, SaaS).",
+        color: "from-teal-500 to-emerald-500",
+        badgeBg: "bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/20"
+      },
+      {
+        level: 3,
+        lessonId: 3,
+        title: "Tầng Điều phối (Bài 3)",
+        desc: "Hệ điều hành, Ảo hóa, Container.",
+        color: "from-emerald-500 to-green-600",
+        badgeBg: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
+      },
+      {
+        level: 2,
+        lessonId: 2,
+        title: "Tầng Phần cứng (Bài 2)",
+        desc: "Input, Process, Output, Storage.",
+        color: "from-amber-500 to-yellow-600",
+        badgeBg: "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20"
+      },
+      {
+        level: 1,
+        lessonId: 1,
+        title: "Nền tảng lịch sử (Bài 1)",
+        desc: "Chuyển đổi số & Các cuộc CMCN.",
+        color: "from-slate-600 to-slate-800",
+        badgeBg: "bg-slate-500/10 text-slate-700 dark:text-slate-300 border-slate-500/20"
+      }
+    ];
+
+    // Trạng thái ứng dụng (lưu trữ qua LocalStorage)
+    const STORAGE_KEY = 'it40_learning_hub_state_v1';
+    let appState = {
+      currentView: 'overview', // 'overview' hoặc số từ 1 đến 8
+      completedIds: [],
+      notes: {},
+      filter: 'all', // 'all', 'uncompleted', 'completed'
+      searchQuery: '',
+      theme: 'light'
+    };
+
+    // Khởi tạo từ LocalStorage
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          appState = {
+            ...appState,
+            ...parsed,
+            completedIds: Array.isArray(parsed.completedIds) ? parsed.completedIds : [],
+            notes: typeof parsed.notes === 'object' && parsed.notes !== null ? parsed.notes : {}
+          };
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          appState.theme = 'dark';
+        }
+      } catch (e) {
+        console.warn('Không thể đọc LocalStorage:', e);
+      }
+      applyTheme(appState.theme);
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          currentView: appState.currentView,
+          completedIds: appState.completedIds,
+          notes: appState.notes,
+          theme: appState.theme
+        }));
+      } catch (e) {
+        console.warn('Không thể lưu LocalStorage:', e);
+      }
+    }
+
+    // Chuyển đổi Sáng / Tối
+    function applyTheme(theme) {
+      const html = document.documentElement;
+      if (theme === 'dark') {
+        html.classList.add('dark');
+      } else {
+        html.classList.remove('dark');
+      }
+    }
+
+    function toggleTheme() {
+      appState.theme = appState.theme === 'dark' ? 'light' : 'dark';
+      applyTheme(appState.theme);
+      saveState();
+    }
+
+    // Điều khiển Sidebar trên Mobile
+    function toggleSidebar(open) {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('mobileOverlay');
+      if (open) {
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+      } else {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+      }
+    }
+
+    // Tìm kiếm & Lọc
+    function handleSearch(value) {
+      appState.searchQuery = value.trim();
+      const clearBtn = document.getElementById('clearSearchBtn');
+      if (appState.searchQuery.length > 0) {
+        clearBtn.classList.remove('hidden');
+      } else {
+        clearBtn.classList.add('hidden');
+      }
+      renderSidebarList();
+      if (appState.searchQuery.length > 0) {
+        renderSearchResultsBanner();
+      } else {
+        renderMainContent();
+      }
+    }
+
+    function clearSearch() {
+      const input = document.getElementById('searchInput');
+      input.value = '';
+      handleSearch('');
+    }
+
+    function setFilter(filterType) {
+      appState.filter = filterType;
+      document.querySelectorAll('.filter-tab').forEach(btn => {
+        btn.classList.remove('bg-white', 'dark:bg-slate-700', 'text-sky-600', 'dark:text-sky-400', 'shadow-xs', 'font-semibold');
+        btn.classList.add('text-slate-600', 'dark:text-slate-400');
+      });
+      const activeBtn = document.getElementById(`filter-${filterType}`);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-white', 'dark:bg-slate-700', 'text-sky-600', 'dark:text-sky-400', 'shadow-xs', 'font-semibold');
+        activeBtn.classList.remove('text-slate-600', 'dark:text-slate-400');
+      }
+      renderSidebarList();
+    }
+
+    // Đánh dấu hoàn thành bài học
+    function toggleLessonComplete(lessonId) {
+      const idx = appState.completedIds.indexOf(lessonId);
+      if (idx === -1) {
+        appState.completedIds.push(lessonId);
+      } else {
+        appState.completedIds.splice(idx, 1);
+      }
+      saveState();
+      updateProgressUI();
+      renderSidebarList();
+      renderMainContent();
+    }
+
+    // Cập nhật thanh tiến độ ở Sidebar
+    function updateProgressUI() {
+      const count = appState.completedIds.length;
+      const total = LESSONS_DATA.length;
+      const pct = Math.round((count / total) * 100);
+      document.getElementById('progressCountText').textContent = `${count}/${total} chuyên đề`;
+      document.getElementById('progressBar').style.width = `${pct}%`;
+    }
+
+    // Chọn chuyên đề hoặc Bức tranh toàn cảnh
+    function selectView(view) {
+      appState.currentView = view;
+      saveState();
+      toggleSidebar(false);
+      renderSidebarList();
+      renderMainContent();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Điều hướng Bài trước / Bài tiếp theo
+    function navigateLesson(delta) {
+      if (appState.currentView === 'overview') {
+        if (delta > 0) selectView(1);
+        return;
+      }
+      const nextId = Number(appState.currentView) + delta;
+      if (nextId < 1) {
+        selectView('overview');
+      } else if (nextId <= 8) {
+        selectView(nextId);
+      }
+    }
+
+    // Render danh sách chuyên đề bên Sidebar
+    function renderSidebarList() {
+      const listEl = document.getElementById('lessonList');
+      const overviewBtn = document.getElementById('nav-overview');
+      const query = appState.searchQuery.toLowerCase();
+
+      // Highlight nút Overview
+      if (appState.currentView === 'overview') {
+        overviewBtn.className = 'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all bg-indigo-50/90 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-800/80 shadow-xs';
+      } else {
+        overviewBtn.className = 'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all hover:bg-slate-100/80 dark:hover:bg-slate-800/70 text-slate-700 dark:text-slate-300 border border-transparent';
+      }
+
+      const filtered = LESSONS_DATA.filter(lesson => {
+        const isDone = appState.completedIds.includes(lesson.id);
+        if (appState.filter === 'completed' && !isDone) return false;
+        if (appState.filter === 'uncompleted' && isDone) return false;
+
+        if (!query) return true;
+        const searchableText = [
+          `bài ${lesson.id}`,
+          lesson.title,
+          lesson.shortTitle,
+          lesson.subtitle,
+          ...lesson.takeaways,
+          lesson.caseStudy.title,
+          lesson.caseStudy.content
+        ].join(' ').toLowerCase();
+        return searchableText.includes(query);
+      });
+
+      if (filtered.length === 0) {
+        listEl.innerHTML = `
+          <div class="px-3 py-6 text-center text-xs text-slate-400 dark:text-slate-500">
+            Không tìm thấy chuyên đề phù hợp.
+          </div>
+        `;
+        return;
+      }
+
+      listEl.innerHTML = filtered.map(lesson => {
+        const isActive = appState.currentView === lesson.id;
+        const isDone = appState.completedIds.includes(lesson.id);
+
+        const activeClasses = isActive
+          ? 'bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border-sky-200/90 dark:border-sky-800/80 shadow-xs font-semibold'
+          : 'hover:bg-slate-100/80 dark:hover:bg-slate-800/70 text-slate-700 dark:text-slate-300 border-transparent';
+
+        const badgeClasses = isActive
+          ? 'bg-sky-500 text-white'
+          : isDone
+            ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400'
+            : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400';
+
+        return `
+          <button
+            onclick="selectView(${lesson.id})"
+            class="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-left transition-all border ${activeClasses}"
+          >
+            <span class="w-6 h-6 rounded-lg text-[11px] font-bold flex items-center justify-center shrink-0 ${badgeClasses}">
+              ${lesson.id}
+            </span>
+            <span class="text-xs flex-1 truncate leading-snug">
+              ${lesson.shortTitle}
+            </span>
+            ${isDone
+              ? `<span class="w-5 h-5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0" title="Đã hoàn thành">
+                   <i data-lucide="check" class="w-3.5 h-3.5 stroke-[2.5]"></i>
+                 </span>`
+              : `<span class="w-2 h-2 rounded-full bg-slate-200 dark:bg-slate-700 shrink-0"></span>`
+            }
+          </button>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    // Hiển thị thông báo chi tiết khi người dùng click vào từng khối trong sơ đồ tương tác
+    function showDiagramDetail(lessonId, title, detail) {
+      const box = document.getElementById(`diagram-detail-${lessonId}`);
+      if (!box) return;
+      box.innerHTML = `
+        <div class="flex items-start gap-3 animate-content">
+          <div class="w-8 h-8 rounded-lg bg-sky-500/15 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0 mt-0.5">
+            <i data-lucide="info" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <div class="text-xs font-bold text-sky-700 dark:text-sky-300 uppercase tracking-wide">${title}</div>
+            <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-200 mt-1 leading-relaxed">${detail}</p>
+          </div>
+        </div>
+      `;
+      lucide.createIcons();
+    }
+
+    // Tạo Sơ đồ Trực quan Tương tác riêng cho từng bài (1 đến 8) bám sát 100% PDF
+    function renderInteractiveDiagram(lessonId) {
+      switch (lessonId) {
+        case 1:
+          return `
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+              <button onclick="showDiagramDetail(1, 'Cách mạng Công nghiệp 1.0', 'Cơ khí hóa sản xuất dựa trên động cơ hơi nước và năng lượng nước, đánh dấu bước chuyển từ lao động thủ công sang máy móc.')"
+                class="diagram-node chevron-card-first text-left p-5 rounded-2xl md:rounded-none bg-slate-100 hover:bg-slate-200/80 dark:bg-slate-800 dark:hover:bg-slate-700/90 border border-slate-200 dark:border-slate-700 flex flex-col justify-between min-h-[132px]">
+                <div class="w-9 h-9 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center mb-3">
+                  <i data-lucide="settings" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <div class="text-xs font-extrabold text-slate-500 dark:text-slate-400">1.0</div>
+                  <div class="text-sm font-bold text-slate-900 dark:text-white mt-0.5">Cơ khí / Hơi nước</div>
+                </div>
+              </button>
+
+              <button onclick="showDiagramDetail(1, 'Cách mạng Công nghiệp 2.0', 'Ứng dụng điện năng và dây chuyền lắp ráp để tạo ra kỷ nguyên sản xuất hàng loạt quy mô lớn.')"
+                class="diagram-node chevron-card text-left p-5 md:pl-8 rounded-2xl md:rounded-none bg-slate-100 hover:bg-slate-200/80 dark:bg-slate-800 dark:hover:bg-slate-700/90 border border-slate-200 dark:border-slate-700 flex flex-col justify-between min-h-[132px]">
+                <div class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-3">
+                  <i data-lucide="zap" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <div class="text-xs font-extrabold text-amber-600 dark:text-amber-400">2.0</div>
+                  <div class="text-sm font-bold text-slate-900 dark:text-white mt-0.5">Điện năng / Sản xuất hàng loạt</div>
+                </div>
+              </button>
+
+              <button onclick="showDiagramDetail(1, 'Cách mạng Công nghiệp 3.0', 'Sự ra đời của máy tính, chất bán dẫn và điện tử giúp tự động hóa các dây chuyền sản xuất.')"
+                class="diagram-node chevron-card text-left p-5 md:pl-8 rounded-2xl md:rounded-none bg-slate-100 hover:bg-slate-200/80 dark:bg-slate-800 dark:hover:bg-slate-700/90 border border-slate-200 dark:border-slate-700 flex flex-col justify-between min-h-[132px]">
+                <div class="w-9 h-9 rounded-xl bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-3">
+                  <i data-lucide="cpu" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <div class="text-xs font-extrabold text-indigo-600 dark:text-indigo-400">3.0</div>
+                  <div class="text-sm font-bold text-slate-900 dark:text-white mt-0.5">Tự động hóa / Máy tính</div>
+                </div>
+              </button>
+
+              <button onclick="showDiagramDetail(1, 'Cách mạng Công nghiệp 4.0 (Hiện tại)', 'Xoay quanh lõi kết nối số, Trí tuệ nhân tạo (AI), Internet vạn vật (IoT) và Dữ liệu lớn (Big Data) tạo thành hệ thống thông minh.')"
+                class="diagram-node chevron-card text-left p-5 md:pl-8 rounded-2xl md:rounded-none bg-gradient-to-br from-sky-500 to-cyan-500 text-white shadow-lg shadow-sky-500/20 flex flex-col justify-between min-h-[132px]">
+                <div class="w-9 h-9 rounded-xl bg-white/20 text-white flex items-center justify-center mb-3">
+                  <i data-lucide="cloud-cog" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <div class="text-xs font-extrabold text-sky-100">4.0 • KỶ NGUYÊN SỐ</div>
+                  <div class="text-sm font-extrabold text-white mt-0.5">Kết nối số / AI / IoT / Big Data</div>
+                </div>
+              </button>
+            </div>
+          `;
+
+        case 2:
+          return `
+            <div class="space-y-4">
+              <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
+                <!-- Input -->
+                <button onclick="showDiagramDetail(2, 'Input (Khối Nhập)', 'Tiếp nhận dữ liệu và chỉ thị từ thế giới bên ngoài vào máy tính thông qua bàn phím, chuột, cảm biến, micro, camera...')"
+                  class="diagram-node lg:col-span-3 p-4 rounded-2xl bg-sky-50 dark:bg-sky-950/40 border-2 border-sky-200 dark:border-sky-800/80 text-center hover:border-sky-500">
+                  <div class="w-10 h-10 mx-auto rounded-xl bg-sky-500 text-white flex items-center justify-center mb-2">
+                    <i data-lucide="log-in" class="w-5 h-5"></i>
+                  </div>
+                  <div class="font-bold text-sm text-slate-900 dark:text-white">Input (Nhập)</div>
+                  <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Tiếp nhận dữ liệu đầu vào</div>
+                </button>
+
+                <!-- Arrow -->
+                <div class="lg:col-span-1 flex justify-center text-sky-500">
+                  <i data-lucide="arrow-right" class="w-6 h-6 hidden lg:block"></i>
+                  <i data-lucide="arrow-down" class="w-6 h-6 lg:hidden"></i>
+                </div>
+
+                <!-- Process (CPU + RAM) -->
+                <div class="lg:col-span-4 p-4 rounded-2xl bg-gradient-to-b from-slate-900 to-slate-800 text-white border-2 border-sky-500/60 shadow-lg">
+                  <div class="text-center text-xs font-extrabold uppercase tracking-wider text-sky-400 mb-3">
+                    Process (Xử lý)
+                  </div>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <button onclick="showDiagramDetail(2, 'CPU (Điều khiển & Tính toán)', 'Bộ não thực hiện mọi phép tính logic và điều phối hoạt động. Sức mạnh đo bằng xung nhịp (GHz) và số nhân xử lý.')"
+                      class="diagram-node p-3 rounded-xl bg-slate-800/90 hover:bg-slate-700 border border-sky-400/40 text-left">
+                      <div class="flex items-center gap-2 text-sky-400 font-bold text-xs mb-1">
+                        <i data-lucide="cpu" class="w-4 h-4"></i> CPU
+                      </div>
+                      <div class="text-[11px] text-slate-300 leading-snug">Điều khiển & Tính toán</div>
+                    </button>
+                    <button onclick="showDiagramDetail(2, 'RAM (Bộ nhớ tạm)', 'Bộ nhớ truy xuất ngẫu nhiên tốc độ cực nhanh, lưu trữ dữ liệu đang chạy. Mất dữ liệu khi tắt nguồn và quyết định khả năng đa nhiệm.')"
+                      class="diagram-node p-3 rounded-xl bg-slate-800/90 hover:bg-slate-700 border border-cyan-400/40 text-left">
+                      <div class="flex items-center gap-2 text-cyan-400 font-bold text-xs mb-1">
+                        <i data-lucide="memory-stick" class="w-4 h-4"></i> RAM
+                      </div>
+                      <div class="text-[11px] text-slate-300 leading-snug">Bộ nhớ tạm (Đa nhiệm)</div>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Arrow -->
+                <div class="lg:col-span-1 flex justify-center text-sky-500">
+                  <i data-lucide="arrow-right" class="w-6 h-6 hidden lg:block"></i>
+                  <i data-lucide="arrow-down" class="w-6 h-6 lg:hidden"></i>
+                </div>
+
+                <!-- Output -->
+                <button onclick="showDiagramDetail(2, 'Output (Khối Xuất)', 'Hiển thị và truyền tải kết quả sau khi xử lý ra màn hình, loa, máy in hoặc cơ cấu chấp hành.')"
+                  class="diagram-node lg:col-span-3 p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border-2 border-emerald-200 dark:border-emerald-800/80 text-center hover:border-emerald-500">
+                  <div class="w-10 h-10 mx-auto rounded-xl bg-emerald-500 text-white flex items-center justify-center mb-2">
+                    <i data-lucide="monitor" class="w-5 h-5"></i>
+                  </div>
+                  <div class="font-bold text-sm text-slate-900 dark:text-white">Output (Xuất)</div>
+                  <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Hiển thị kết quả xử lý</div>
+                </button>
+              </div>
+
+              <!-- Kết nối hai chiều với Storage -->
+              <div class="flex flex-col items-center">
+                <div class="flex items-center gap-2 text-sky-500 py-1">
+                  <i data-lucide="arrow-up-down" class="w-5 h-5"></i>
+                  <span class="text-[11px] font-semibold uppercase tracking-wider">Trao đổi dữ liệu 2 chiều</span>
+                </div>
+                <button onclick="showDiagramDetail(2, 'Storage (Lưu trữ: HDD/SSD, ROM)', 'Lưu trữ dữ liệu lâu dài không bị mất khi tắt máy. Ổ cứng SSD hiện đại ưu việt hơn HDD về tốc độ và độ bền; ROM lưu chương trình khởi động BIOS/UEFI.')"
+                  class="diagram-node w-full max-w-xl p-4 rounded-2xl bg-indigo-50/80 dark:bg-indigo-950/40 border-2 border-indigo-200 dark:border-indigo-800/80 hover:border-indigo-500 flex items-center justify-center gap-3">
+                  <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0">
+                    <i data-lucide="hard-drive" class="w-5 h-5"></i>
+                  </div>
+                  <div class="text-left">
+                    <div class="font-bold text-sm text-slate-900 dark:text-white">Storage (Lưu trữ: HDD/SSD, ROM)</div>
+                    <div class="text-xs text-slate-500 dark:text-slate-400">SSD tốc độ cao & ROM chứa BIOS/UEFI</div>
+                  </div>
+                </button>
+              </div>
+            </div>
+          `;
+
+        case 3:
+          return `
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
+              <!-- Chồng lớp 3 tầng -->
+              <div class="lg:col-span-8 space-y-3">
+                <button onclick="showDiagramDetail(3, 'Tầng trên: Ứng dụng / Môi trường ảo (Apps & Virtualization)', 'Bao gồm các phần mềm phục vụ người dùng cuối và môi trường ảo hóa (VM) hoặc đóng gói nhẹ (Docker Container) chạy trên nền hệ điều hành.')"
+                  class="diagram-node w-full p-4 rounded-2xl bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 shadow-sm hover:border-sky-500 flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <span class="w-9 h-9 rounded-xl bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                      <i data-lucide="app-window" class="w-5 h-5"></i>
+                    </span>
+                    <div class="text-left">
+                      <div class="text-sm font-bold text-slate-900 dark:text-white">Ứng dụng / Môi trường ảo (Apps & Virtualization)</div>
+                      <div class="text-xs text-slate-500 dark:text-slate-400">Phần mềm chuyên biệt, Máy ảo (VM) & Container (Docker)</div>
+                    </div>
+                  </div>
+                  <span class="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">Tầng 3</span>
+                </button>
+
+                <button onclick="showDiagramDetail(3, 'Tầng giữa: Hệ điều hành (OS) - Nền tảng điều phối', 'Đóng vai trò trung gian điều phối toàn bộ tài nguyên phần cứng (CPU, RAM, Ổ cứng) cho các ứng dụng hoạt động trơn tru và đồng bộ đa nền tảng.')"
+                  class="diagram-node w-full p-4 rounded-2xl bg-gradient-to-r from-sky-500 to-cyan-500 text-white shadow-md shadow-sky-500/20 flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <span class="w-9 h-9 rounded-xl bg-white/20 text-white flex items-center justify-center">
+                      <i data-lucide="cpu" class="w-5 h-5"></i>
+                    </span>
+                    <div class="text-left">
+                      <div class="text-sm font-bold">Hệ điều hành (OS) - Nền tảng điều phối</div>
+                      <div class="text-xs text-sky-100">Quản lý tài nguyên, giao diện & kết nối phần cứng - phần mềm</div>
+                    </div>
+                  </div>
+                  <span class="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-white/20 text-white">Tầng 2</span>
+                </button>
+
+                <button onclick="showDiagramDetail(3, 'Tầng đáy: Phần cứng (Hardware)', 'Nền tảng vật lý cơ bản gồm vi xử lý, bộ nhớ, thiết bị lưu trữ và ngoại vi tạo nên sức mạnh tính toán gốc.')"
+                  class="diagram-node w-full p-4 rounded-2xl bg-slate-200/80 dark:bg-slate-800/90 border-2 border-slate-300 dark:border-slate-700 hover:border-sky-500 flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <span class="w-9 h-9 rounded-xl bg-slate-700 text-white flex items-center justify-center">
+                      <i data-lucide="server" class="w-5 h-5"></i>
+                    </span>
+                    <div class="text-left">
+                      <div class="text-sm font-bold text-slate-900 dark:text-white">Phần cứng (Hardware)</div>
+                      <div class="text-xs text-slate-600 dark:text-slate-400">CPU, RAM, Storage, Thiết bị vật lý</div>
+                    </div>
+                  </div>
+                  <span class="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-slate-300/70 dark:bg-slate-700 text-slate-700 dark:text-slate-300">Tầng 1</span>
+                </button>
+              </div>
+
+              <!-- Cột Xu hướng -->
+              <div class="lg:col-span-4">
+                <button onclick="showDiagramDetail(3, 'Xu hướng: Hệ sinh thái hợp nhất & OS tích hợp AI', 'Các thiết bị kết nối liền mạch trong một hệ sinh thái hợp nhất (Unified Ecosystem), đồng thời AI được tích hợp sâu vào nhân Hệ điều hành để tự động hóa các tác vụ cốt lõi.')"
+                  class="diagram-node w-full h-full p-5 rounded-2xl bg-indigo-50/90 dark:bg-indigo-950/50 border-2 border-dashed border-indigo-300 dark:border-indigo-700 text-left hover:border-indigo-500">
+                  <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-indigo-600 text-white text-[11px] font-bold mb-3">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> XU HƯỚNG TƯƠNG LAI
+                  </div>
+                  <h4 class="font-bold text-sm text-slate-900 dark:text-white leading-snug">
+                    Hệ sinh thái hợp nhất (Unified Ecosystem) & OS tích hợp AI
+                  </h4>
+                  <p class="text-xs text-slate-600 dark:text-slate-300 mt-2 leading-relaxed">
+                    Đồng bộ dữ liệu xuyên suốt đa thiết bị và tự động hóa tác vụ cốt lõi ngay từ cấp độ hệ điều hành.
+                  </p>
+                </button>
+              </div>
+            </div>
+          `;
+
+        case 4:
+          return `
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
+              <!-- Trái: 5 Đặc tính NIST -->
+              <div class="lg:col-span-3">
+                <button onclick="showDiagramDetail(4, '5 Đặc tính Cloud theo chuẩn NIST', '1. Truy cập mạng rộng rãi (Broad Network Access) • 2. Tự phục vụ theo nhu cầu (On-demand Self-service) • 3. Co giãn linh hoạt (Rapid Elasticity) • 4. Đo lường dịch vụ (Measured Service) • 5. Dùng chung tài nguyên (Resource Pooling).')"
+                  class="diagram-node w-full p-4 rounded-2xl bg-slate-100 dark:bg-slate-800 border-2 border-sky-200 dark:border-sky-800 text-left hover:border-sky-500">
+                  <div class="text-xs font-extrabold text-sky-600 dark:text-sky-400 uppercase mb-2 flex items-center gap-1.5">
+                    <i data-lucide="check-circle-2" class="w-4 h-4"></i> 5 Đặc tính NIST
+                  </div>
+                  <ul class="text-xs space-y-1.5 text-slate-700 dark:text-slate-300 font-medium">
+                    <li>• Truy cập rộng</li>
+                    <li>• Tự phục vụ</li>
+                    <li>• Co giãn linh hoạt</li>
+                    <li>• Đo lường dịch vụ</li>
+                    <li>• Dùng chung tài nguyên</li>
+                  </ul>
+                </button>
+              </div>
+
+              <!-- Giữa: Kim tự tháp 3 tầng -->
+              <div class="lg:col-span-6 flex flex-col items-center space-y-2.5">
+                <button onclick="showDiagramDetail(4, 'SaaS (Phần mềm - Software as a Service)', 'Người dùng sử dụng trực tiếp ứng dụng hoàn chỉnh qua trình duyệt web mà không cần cài đặt hay quản lý hạ tầng (VD: Google Workspace, Microsoft 365).')"
+                  class="diagram-node w-3/5 py-3.5 px-4 rounded-t-3xl rounded-b-xl bg-gradient-to-r from-orange-500 to-amber-500 text-white text-center shadow-md">
+                  <div class="font-extrabold text-sm">SaaS</div>
+                  <div class="text-[11px] text-orange-50">(Phần mềm - Software)</div>
+                </button>
+
+                <button onclick="showDiagramDetail(4, 'PaaS (Nền tảng - Platform as a Service)', 'Nhà cung cấp lo toàn bộ hạ tầng máy chủ, hệ điều hành và công cụ phát triển; lập trình viên chỉ cần tập trung viết code và triển khai ứng dụng.')"
+                  class="diagram-node w-4/5 py-3.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-sky-500 text-white text-center shadow-md">
+                  <div class="font-extrabold text-sm">PaaS</div>
+                  <div class="text-[11px] text-cyan-50">(Nền tảng - Platform)</div>
+                </button>
+
+                <button onclick="showDiagramDetail(4, 'IaaS (Hạ tầng - Infrastructure as a Service)', 'Cung cấp tài nguyên hạ tầng tính toán ảo hóa cơ bản như máy chủ ảo, lưu trữ, mạng (VD: thuê máy chủ ảo trống trên Amazon EC2).')"
+                  class="diagram-node w-full py-4 px-4 rounded-b-2xl rounded-t-xl bg-gradient-to-r from-blue-700 to-indigo-800 text-white text-center shadow-md">
+                  <div class="font-extrabold text-sm">IaaS</div>
+                  <div class="text-[11px] text-blue-100">(Hạ tầng - Infrastructure)</div>
+                </button>
+              </div>
+
+              <!-- Phải: Lõi phần mềm -->
+              <div class="lg:col-span-3">
+                <button onclick="showDiagramDetail(4, '4 Thành phần Lõi phần mềm', 'Một hệ thống phần mềm hoàn chỉnh không chỉ có mã nguồn (Code) mà còn bao gồm Quy trình vận hành (Procedures), Tài liệu hướng dẫn (Documentation) và Dữ liệu (Data).')"
+                  class="diagram-node w-full p-4 rounded-2xl bg-slate-100 dark:bg-slate-800 border-2 border-indigo-200 dark:border-indigo-800 text-left hover:border-indigo-500">
+                  <div class="text-xs font-extrabold text-indigo-600 dark:text-indigo-400 uppercase mb-2 flex items-center gap-1.5">
+                    <i data-lucide="package" class="w-4 h-4"></i> Lõi phần mềm
+                  </div>
+                  <ul class="text-xs space-y-1.5 text-slate-700 dark:text-slate-300 font-medium">
+                    <li>• Code (Mã nguồn)</li>
+                    <li>• Procedures (Quy trình)</li>
+                    <li>• Documentation (Tài liệu)</li>
+                    <li>• Data (Dữ liệu)</li>
+                  </ul>
+                </button>
+              </div>
+            </div>
+          `;
+
+        case 5:
+          return `
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+              <!-- Mạng máy tính cơ bản -->
+              <button onclick="showDiagramDetail(5, 'Mạng Máy Tính Cơ Bản (Computer Networks)', 'Hạ tầng kết nối các thiết bị máy tính lại với nhau nhằm chia sẻ tài nguyên, dữ liệu và dịch vụ nội bộ hoặc diện rộng.')"
+                class="diagram-node p-5 rounded-2xl bg-slate-100 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-sky-500 text-center">
+                <div class="w-11 h-11 mx-auto rounded-full bg-sky-500/15 text-sky-600 dark:text-sky-400 flex items-center justify-center mb-3">
+                  <i data-lucide="network" class="w-5 h-5"></i>
+                </div>
+                <div class="font-bold text-sm text-slate-900 dark:text-white">Mạng Máy Tính Cơ Bản</div>
+                <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">(Computer Networks)</div>
+              </button>
+
+              <!-- Trung tâm: Internet / WWW -->
+              <button onclick="showDiagramDetail(5, 'Trung tâm: Internet / WWW', 'Internet là hạ tầng mạng toàn cầu kết nối hàng tỷ thiết bị; còn WWW (World Wide Web) là không gian thông tin tài liệu/trang web hoạt động trên nền Internet.')"
+                class="diagram-node p-6 rounded-3xl bg-gradient-to-br from-sky-500 via-cyan-500 to-indigo-600 text-white shadow-xl shadow-sky-500/25 text-center">
+                <div class="w-14 h-14 mx-auto rounded-full bg-white/20 flex items-center justify-center mb-3">
+                  <i data-lucide="globe" class="w-7 h-7"></i>
+                </div>
+                <div class="font-extrabold text-base">Internet / WWW</div>
+                <div class="text-xs text-sky-100 mt-1">Hạt nhân kết nối thông tin toàn cầu</div>
+              </button>
+
+              <!-- Cột phải: Mạng di động 6G & IoT -->
+              <div class="space-y-3">
+                <button onclick="showDiagramDetail(5, 'Mạng Di Động & 6G (Tầm nhìn tương lai)', 'Công nghệ truyền thông không dây tốc độ siêu cao, độ trễ cực thấp, mở đường cho trí tuệ nhân tạo phân tán và thực tế ảo thời gian thực.')"
+                  class="diagram-node w-full p-4 rounded-2xl bg-indigo-50/90 dark:bg-indigo-950/50 border-2 border-indigo-200 dark:border-indigo-800 hover:border-indigo-500 text-left flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0">
+                    <i data-lucide="radio" class="w-5 h-5"></i>
+                  </div>
+                  <div>
+                    <div class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white">Mạng Di Động & 6G</div>
+                    <div class="text-[11px] text-slate-500 dark:text-slate-400">(Tầm nhìn tương lai)</div>
+                  </div>
+                </button>
+
+                <button onclick="showDiagramDetail(5, 'IoT (Internet vạn vật - Kết nối vật lý)', 'Biến mọi đồ vật vật lý (cảm biến, đèn giao thông, xe tự lái, thiết bị gia dụng) thành thiết bị số có khả năng thu thập và trao đổi dữ liệu.')"
+                  class="diagram-node w-full p-4 rounded-2xl bg-teal-50/90 dark:bg-teal-950/50 border-2 border-teal-200 dark:border-teal-800 hover:border-teal-500 text-left flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center shrink-0">
+                    <i data-lucide="cpu" class="w-5 h-5"></i>
+                  </div>
+                  <div>
+                    <div class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white">IoT (Internet vạn vật)</div>
+                    <div class="text-[11px] text-slate-500 dark:text-slate-400">(Kết nối vật lý)</div>
+                  </div>
+                </button>
+              </div>
+            </div>
+          `;
+
+        case 6:
+          return `
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+              <!-- Cột trái: 3 Bước Tư duy lập trình -->
+              <div class="lg:col-span-6 p-4 rounded-2xl bg-slate-100/80 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2.5">
+                <div class="text-xs font-extrabold uppercase tracking-wider text-sky-600 dark:text-sky-400 mb-2">
+                  Quy trình Tư duy Lập trình
+                </div>
+                <button onclick="showDiagramDetail(6, 'Bước 1: Nhìn thấu bản chất', 'Phân tích bài toán phức tạp thành các thành phần cốt lõi, loại bỏ yếu tố gây nhiễu để hiểu đúng vấn đề cần giải quyết.')"
+                  class="diagram-node w-full p-3.5 rounded-xl bg-cyan-500 text-white font-bold text-sm flex items-center gap-3 shadow-xs">
+                  <i data-lucide="eye" class="w-5 h-5 shrink-0"></i>
+                  <span>1. Nhìn thấu bản chất</span>
+                </button>
+                <div class="flex justify-center text-sky-500"><i data-lucide="arrow-down" class="w-4 h-4"></i></div>
+                <button onclick="showDiagramDetail(6, 'Bước 2: Tìm sự tương đồng', 'Nhận diện các quy luật lặp lại hoặc mẫu bài toán đã biết để tái sử dụng giải pháp tối ưu.')"
+                  class="diagram-node w-full p-3.5 rounded-xl bg-sky-500 text-white font-bold text-sm flex items-center gap-3 shadow-xs">
+                  <i data-lucide="scan-line" class="w-5 h-5 shrink-0"></i>
+                  <span>2. Tìm sự tương đồng</span>
+                </button>
+                <div class="flex justify-center text-sky-500"><i data-lucide="arrow-down" class="w-4 h-4"></i></div>
+                <button onclick="showDiagramDetail(6, 'Bước 3: Viết chỉ dẫn chính xác (Step-by-step)', 'Xây dựng thuật toán rõ ràng, rành mạch từng bước để máy tính thực thi chính xác và khuếch đại trí tuệ con người.')"
+                  class="diagram-node w-full p-3.5 rounded-xl bg-indigo-600 text-white font-bold text-sm flex items-center gap-3 shadow-xs">
+                  <i data-lucide="list-ordered" class="w-5 h-5 shrink-0"></i>
+                  <span>3. Viết chỉ dẫn chính xác (Step-by-step)</span>
+                </button>
+              </div>
+
+              <!-- Cột phải: 3 Phân lớp Tự động hóa -->
+              <div class="lg:col-span-6 p-4 rounded-2xl bg-slate-100/80 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex flex-col justify-between space-y-2.5">
+                <div class="text-xs font-extrabold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 mb-1">
+                  3 Phân lớp Tự động hóa
+                </div>
+                <button onclick="showDiagramDetail(6, 'BPA: Cấp độ Doanh nghiệp (Business Process Automation)', 'Tự động hóa luồng nghiệp vụ xuyên suốt giữa các phòng ban trong tổ chức để tối ưu vận hành tổng thể.')"
+                  class="diagram-node w-full p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 text-left flex items-center justify-between">
+                  <div>
+                    <div class="font-bold text-sm text-slate-900 dark:text-white">BPA: Cấp độ Doanh nghiệp</div>
+                    <div class="text-xs text-slate-500 dark:text-slate-400">Tự động hóa quy trình nghiệp vụ tổng thể</div>
+                  </div>
+                  <span class="px-2.5 py-1 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-mono text-xs font-bold">BPA</span>
+                </button>
+
+                <button onclick="showDiagramDetail(6, 'RPA: Cấp độ Ứng dụng (Robotic Process Automation)', 'Sử dụng robot phần mềm mô phỏng thao tác người dùng trên giao diện ứng dụng để xử lý các tác vụ lặp lại.')"
+                  class="diagram-node w-full p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-sky-500 text-left flex items-center justify-between">
+                  <div>
+                    <div class="font-bold text-sm text-slate-900 dark:text-white">RPA: Cấp độ Ứng dụng (Robot)</div>
+                    <div class="text-xs text-slate-500 dark:text-slate-400">Robot phần mềm tự động thao tác lặp lại</div>
+                  </div>
+                  <span class="px-2.5 py-1 rounded-lg bg-sky-500/10 text-sky-600 dark:text-sky-400 font-mono text-xs font-bold">RPA</span>
+                </button>
+
+                <button onclick="showDiagramDetail(6, 'IaC: Cấp độ Hạ tầng (Infrastructure as Code)', 'Quản lý và cấp phát máy chủ, mạng, hạ tầng Cloud tự động thông qua các tệp mã nguồn thay vì cấu hình thủ công.')"
+                  class="diagram-node w-full p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-teal-500 text-left flex items-center justify-between">
+                  <div>
+                    <div class="font-bold text-sm text-slate-900 dark:text-white">IaC: Cấp độ Hạ tầng (Code)</div>
+                    <div class="text-xs text-slate-500 dark:text-slate-400">Khởi tạo và quản lý hạ tầng bằng mã nguồn</div>
+                  </div>
+                  <span class="px-2.5 py-1 rounded-lg bg-teal-500/10 text-teal-600 dark:text-teal-400 font-mono text-xs font-bold">IaC</span>
+                </button>
+              </div>
+            </div>
+          `;
+
+        case 7:
+          return `
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <button onclick="showDiagramDetail(7, 'Nhiên liệu (Fuel): Dữ liệu lớn (Big Data)', 'Big Data là nguồn nguyên liệu thô vô giá của thời đại 4.0. Dữ liệu càng sạch, giàu có và bền vững thì hệ thống AI vận hành càng chính xác.')"
+                class="diagram-node p-4 rounded-2xl bg-amber-50/90 dark:bg-amber-950/40 border-2 border-amber-200 dark:border-amber-800/80 hover:border-amber-500 text-left flex flex-col justify-between">
+                <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center mb-3">
+                  <i data-lucide="database" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <div class="text-[11px] font-extrabold uppercase text-amber-600 dark:text-amber-400">Nhiên liệu (Fuel)</div>
+                  <div class="font-bold text-sm text-slate-900 dark:text-white mt-0.5">Dữ liệu lớn (Big Data)</div>
+                </div>
+              </button>
+
+              <button onclick="showDiagramDetail(7, 'Động cơ (Engine): Lõi AI', 'Trí tuệ nhân tạo đóng vai trò là khối động cơ trung tâm, tiếp nhận nhiên liệu dữ liệu để học hỏi, suy luận và chuyển hóa thành giá trị hữu ích.')"
+                class="diagram-node p-4 rounded-2xl bg-gradient-to-br from-sky-500 to-indigo-600 text-white shadow-lg shadow-sky-500/20 text-left flex flex-col justify-between">
+                <div class="w-10 h-10 rounded-xl bg-white/20 text-white flex items-center justify-center mb-3">
+                  <i data-lucide="cpu" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <div class="text-[11px] font-extrabold uppercase text-sky-100">Động cơ (Engine)</div>
+                  <div class="font-bold text-sm text-white mt-0.5">Lõi AI</div>
+                </div>
+              </button>
+
+              <button onclick="showDiagramDetail(7, 'Vô-lăng: Chính sách Lấy Con Người Làm Trung Tâm', 'Công nghệ mạnh mẽ cần có tay lái chuẩn xác. Chính sách lấy con người làm trung tâm đảm bảo AI phục vụ lợi ích, an toàn và giá trị nhân văn của xã hội.')"
+                class="diagram-node p-4 rounded-2xl bg-violet-50/90 dark:bg-violet-950/40 border-2 border-violet-200 dark:border-violet-800/80 hover:border-violet-500 text-left flex flex-col justify-between">
+                <div class="w-10 h-10 rounded-xl bg-violet-600 text-white flex items-center justify-center mb-3">
+                  <i data-lucide="compass" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <div class="text-[11px] font-extrabold uppercase text-violet-600 dark:text-violet-400">Vô-lăng điều hướng</div>
+                  <div class="font-bold text-sm text-slate-900 dark:text-white mt-0.5">Chính sách Lấy Con Người Làm Trung Tâm</div>
+                </div>
+              </button>
+
+              <button onclick="showDiagramDetail(7, 'Lực đẩy (Output): Phát triển bền vững', 'Kết quả đầu ra của cỗ máy AI là năng suất vượt trội, đổi mới sáng tạo và sự phát triển bền vững cho tổ chức lẫn quốc gia.')"
+                class="diagram-node p-4 rounded-2xl bg-emerald-50/90 dark:bg-emerald-950/40 border-2 border-emerald-200 dark:border-emerald-800/80 hover:border-emerald-500 text-left flex flex-col justify-between">
+                <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center mb-3">
+                  <i data-lucide="rocket" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <div class="text-[11px] font-extrabold uppercase text-emerald-600 dark:text-emerald-400">Lực đẩy (Output)</div>
+                  <div class="font-bold text-sm text-slate-900 dark:text-white mt-0.5">Phát triển bền vững</div>
+                </div>
+              </button>
+            </div>
+          `;
+
+        case 8:
+          return `
+            <div class="p-3 sm:p-5 rounded-3xl bg-slate-100/90 dark:bg-slate-800/70 border-2 border-slate-300 dark:border-slate-700 space-y-3">
+              <!-- Vòng ngoài cùng -->
+              <div class="flex items-center justify-between px-2">
+                <button onclick="showDiagramDetail(8, 'Vòng 1 (Ngoài cùng): Hành lang pháp lý - Bảo vệ không gian mạng', 'Hệ thống luật pháp Việt Nam gồm Luật An ninh mạng, Luật AI và Luật Bảo vệ dữ liệu cá nhân tạo khung pháp lý bảo vệ tổ chức và công dân.')"
+                  class="text-left text-xs font-extrabold text-slate-700 dark:text-slate-200 hover:text-sky-600 flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-slate-500"></span>
+                  Vòng 1: Hành lang pháp lý - Bảo vệ không gian mạng
+                </button>
+                <span class="text-[10px] font-mono text-slate-400">Lớp ngoài</span>
+              </div>
+
+              <!-- Vòng 2 -->
+              <div class="p-3 sm:p-4 rounded-2xl bg-sky-100/80 dark:bg-sky-950/60 border-2 border-sky-300 dark:border-sky-800 space-y-3">
+                <button onclick="showDiagramDetail(8, 'Vòng 2: Đạo đức số - Chống Deepfake', 'Nâng cao nhận thức, trách nhiệm số khi ứng xử trên mạng và trang bị kỹ năng nhận diện, đối phó với công nghệ giả mạo Deepfake.')"
+                  class="text-left text-xs font-extrabold text-sky-800 dark:text-sky-300 hover:underline flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
+                  Vòng 2: Đạo đức số - Chống Deepfake
+                </button>
+
+                <!-- Vòng 3 -->
+                <div class="p-3 sm:p-4 rounded-2xl bg-indigo-100/80 dark:bg-indigo-950/70 border-2 border-indigo-300 dark:border-indigo-700 space-y-3">
+                  <button onclick="showDiagramDetail(8, 'Vòng 3: ISMS (ISO 27000) - Quản lý rủi ro', 'Hệ thống quản lý an toàn thông tin bài bản dựa trên đánh giá rủi ro liên tục, phân công trách nhiệm rõ ràng và cải tiến không ngừng.')"
+                    class="text-left text-xs font-extrabold text-indigo-800 dark:text-indigo-300 hover:underline flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+                    Vòng 3: ISMS (ISO 27000) - Quản lý rủi ro
+                  </button>
+
+                  <!-- Lõi trung tâm: Tam giác CIA -->
+                  <button onclick="showDiagramDetail(8, 'Lõi trung tâm: Khiên Tam giác CIA', '3 trụ cột cốt lõi của An toàn thông tin: Confidentiality (Tính bảo mật) – Integrity (Tính toàn vẹn) – Availability (Tính sẵn sàng).')"
+                    class="diagram-node w-full p-4 rounded-xl bg-gradient-to-r from-rose-600 via-orange-600 to-amber-600 text-white shadow-lg flex items-center justify-center gap-3">
+                    <i data-lucide="shield" class="w-6 h-6 shrink-0"></i>
+                    <div class="text-left">
+                      <div class="font-extrabold text-sm">Lõi trung tâm: Tam giác CIA</div>
+                      <div class="text-[11px] text-orange-100">Confidentiality (Bảo mật) • Integrity (Toàn vẹn) • Availability (Sẵn sàng)</div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+      }
+    }
+
+    // Render Bức Tranh Toàn Cảnh IT 4.0 (Trang 10 của PDF)
+    function renderOverviewPage() {
+      document.getElementById('breadcrumbCurrent').textContent = 'Bức tranh toàn cảnh IT 4.0';
+      document.getElementById('prevBtn').disabled = true;
+      document.getElementById('nextBtn').disabled = false;
+
+      const completedCount = appState.completedIds.length;
+
+      return `
+        <div class="space-y-8 animate-content">
+          <!-- Hero Banner Tổng Quan -->
+          <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 text-white p-6 sm:p-10 shadow-xl border border-slate-700/60">
+            <div class="relative z-10 max-w-3xl space-y-4">
+              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/20 border border-sky-400/30 text-sky-300 text-xs font-bold tracking-wide uppercase">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                Tổng hợp kiến thức toàn diện • Bài 1 – Bài 8
+              </div>
+              <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight">
+                Bức Tranh Toàn Cảnh <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-cyan-300">IT 4.0</span>
+              </h2>
+              <p class="text-sm sm:text-base text-slate-300 leading-relaxed">
+                Từ nền tảng phần cứng đến trí tuệ nhân tạo & đạo đức số. Nhấp vào từng tầng kiến thức bên dưới để đi sâu vào chuyên đề tương ứng.
+              </p>
+              <div class="pt-2 flex flex-wrap items-center gap-3">
+                <button onclick="selectView(1)" class="px-5 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-sky-500/25 transition-all">
+                  <i data-lucide="play" class="w-4 h-4 fill-current"></i>
+                  Bắt đầu từ Bài 1
+                </button>
+                <div class="px-4 py-2.5 rounded-xl bg-white/10 border border-white/10 text-xs font-semibold text-slate-200">
+                  Đã hoàn thành: <span class="text-sky-400 font-bold">${completedCount}/8</span> chuyên đề
+                </div>
+              </div>
+            </div>
+            <!-- Decor circles -->
+            <div class="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-sky-500/10 blur-2xl pointer-events-none"></div>
+            <div class="absolute right-10 -bottom-20 w-72 h-72 rounded-full bg-indigo-500/20 blur-3xl pointer-events-none"></div>
+          </section>
+
+          <!-- Mô hình Tháp 8 Tầng Kiến Thức -->
+          <section class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-4">
+              <div>
+                <h3 class="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                  <i data-lucide="layers" class="w-5 h-5 text-sky-500"></i>
+                  Kiến Trúc 8 Tầng Tri Thức Công Nghệ 4.0
+                </h3>
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+                  Xếp chồng từ Nền tảng lịch sử (Tầng 1) lên đỉnh cao Quản trị & Đạo đức số (Tầng 8)
+                </p>
+              </div>
+              <span class="text-xs font-semibold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 px-3 py-1.5 rounded-xl border border-sky-200/60 dark:border-sky-800/60 self-start">
+                Nhấp từng tầng để mở bài học
+              </span>
+            </div>
+
+            <div class="space-y-2.5">
+              ${OVERVIEW_LAYERS.map(layer => {
+                const isDone = appState.completedIds.includes(layer.lessonId);
+                return `
+                  <button
+                    onclick="selectView(${layer.lessonId})"
+                    class="diagram-node w-full group relative overflow-hidden rounded-2xl p-4 sm:px-6 sm:py-4 bg-slate-50/90 hover:bg-white dark:bg-slate-800/70 dark:hover:bg-slate-800 border border-slate-200/90 dark:border-slate-700/80 hover:border-sky-400 dark:hover:border-sky-500 shadow-2xs hover:shadow-md flex items-center justify-between gap-4 text-left"
+                  >
+                    <div class="flex items-center gap-4 min-w-0">
+                      <div class="w-10 h-10 rounded-xl bg-gradient-to-br ${layer.color} text-white font-extrabold text-sm flex items-center justify-center shrink-0 shadow-xs">
+                        T${layer.level}
+                      </div>
+                      <div class="min-w-0">
+                        <div class="flex items-center gap-2 flex-wrap">
+                          <span class="font-bold text-sm sm:text-base text-slate-900 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
+                            ${layer.title}
+                          </span>
+                          ${isDone
+                            ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+                                 <i data-lucide="check-circle-2" class="w-3 h-3"></i> Đã xong
+                               </span>`
+                            : ''
+                          }
+                        </div>
+                        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-0.5">
+                          ${layer.desc}
+                        </p>
+                      </div>
+                    </div>
+                    <div class="w-8 h-8 rounded-xl bg-slate-200/60 dark:bg-slate-700/60 group-hover:bg-sky-500 group-hover:text-white text-slate-500 dark:text-slate-400 flex items-center justify-center shrink-0 transition-colors">
+                      <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                    </div>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+
+            <!-- Thông điệp tổng kết ở đáy (Trang 10 PDF) -->
+            <div class="mt-6 p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-sky-50 via-cyan-50/70 to-indigo-50 dark:from-sky-950/50 dark:via-slate-800/80 dark:to-indigo-950/50 border border-sky-200/80 dark:border-sky-800/70 flex items-start gap-4">
+              <div class="w-10 h-10 rounded-xl bg-sky-500 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
+                <i data-lucide="quote" class="w-5 h-5"></i>
+              </div>
+              <p class="text-sm sm:text-base font-semibold text-slate-800 dark:text-slate-100 leading-relaxed italic">
+                “Công nghệ 4.0 không chỉ là thiết bị hay phần mềm, mà là sự hội tụ tinh hoa từ phần cứng đến tư duy máy học, được vận hành bởi đạo đức số và phục vụ sự phát triển của con người.”
+              </p>
+            </div>
+          </section>
+        </div>
+      `;
+    }
+
+    // Render Chi tiết Chuyên đề (Bài 1 - Bài 8)
+    function renderLessonPage(lessonId) {
+      const lesson = LESSONS_DATA.find(l => l.id === Number(lessonId)) || LESSONS_DATA[0];
+      const isDone = appState.completedIds.includes(lesson.id);
+      const savedNote = appState.notes[lesson.id] || '';
+
+      document.getElementById('breadcrumbCurrent').textContent = `Bài ${lesson.id}: ${lesson.shortTitle}`;
+      document.getElementById('prevBtn').disabled = false;
+      document.getElementById('nextBtn').disabled = lesson.id >= 8;
+
+      // Phần mở rộng cho Case Study nếu có bảng/so sánh/công thức
+      let extraCaseHTML = '';
+      if (lesson.caseStudy.comparison) {
+        extraCaseHTML = `
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+            ${lesson.caseStudy.comparison.map(item => `
+              <div class="p-4 rounded-2xl bg-white/80 dark:bg-slate-900/80 border border-amber-200/80 dark:border-amber-800/60">
+                <div class="font-bold text-xs sm:text-sm text-amber-800 dark:text-amber-300 mb-1">${item.label}</div>
+                <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">${item.desc}</p>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      } else if (lesson.caseStudy.table) {
+        extraCaseHTML = `
+          <div class="mt-4 overflow-hidden rounded-2xl border border-amber-200/80 dark:border-amber-800/60 bg-white/90 dark:bg-slate-900/90">
+            <table class="w-full text-left text-xs sm:text-sm">
+              <tbody class="divide-y divide-amber-100 dark:divide-slate-800">
+                ${lesson.caseStudy.table.map(row => `
+                  <tr>
+                    <td class="py-3 px-4 font-extrabold text-amber-700 dark:text-amber-400 w-24 bg-amber-50/60 dark:bg-amber-950/30">${row.tier}</td>
+                    <td class="py-3 px-4 text-slate-700 dark:text-slate-200">${row.example}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } else if (lesson.caseStudy.formula) {
+        extraCaseHTML = `
+          <div class="mt-4 flex flex-wrap items-center gap-2">
+            ${lesson.caseStudy.formula.map((part, i) => `
+              <span class="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-amber-300 dark:border-amber-700 font-bold text-xs text-amber-800 dark:text-amber-300 shadow-2xs">
+                ${part}
+              </span>
+              ${i < lesson.caseStudy.formula.length - 1 ? '<span class="font-extrabold text-amber-600">+</span>' : ''}
+            `).join('')}
+          </div>
+        `;
+      }
+
+      return `
+        <div class="space-y-7 animate-content">
+          <!-- 1. Hero Banner Chuyên đề -->
+          <section class="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-6 sm:p-8 shadow-xs">
+            <div class="flex flex-col md:flex-row md:items-start justify-between gap-6">
+              <div class="space-y-3 max-w-2xl">
+                <div class="flex items-center gap-2.5 flex-wrap">
+                  <span class="px-3 py-1 rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20 text-xs font-extrabold tracking-wider uppercase">
+                    BÀI ${lesson.id} / 8
+                  </span>
+                  <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                    ${lesson.subtitle}
+                  </span>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-snug">
+                  ${lesson.title}
+                </h2>
+                <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
+                  ${lesson.summary}
+                </p>
+              </div>
+
+              <!-- Nút Đánh dấu hoàn thành -->
+              <div class="shrink-0">
+                <button
+                  onclick="toggleLessonComplete(${lesson.id})"
+                  class="w-full md:w-auto px-5 py-3 rounded-2xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-sm ${
+                    isDone
+                      ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-500/25'
+                      : 'bg-slate-900 hover:bg-sky-600 dark:bg-sky-500 dark:hover:bg-sky-400 text-white dark:text-slate-950'
+                  }"
+                >
+                  <i data-lucide="${isDone ? 'check-circle-2' : 'circle'}" class="w-4 h-4"></i>
+                  <span>${isDone ? 'Đã hoàn thành ✓' : 'Đánh dấu đã hoàn thành'}</span>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- 2. Sơ đồ Trực quan & Mô hình Cốt lõi -->
+          <section class="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-6 sm:p-8 shadow-xs space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <h3 class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                  <i data-lucide="git-fork" class="w-5 h-5 text-sky-500"></i>
+                  ${lesson.diagramTitle}
+                </h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1.5">
+                  <i data-lucide="mouse-pointer-click" class="w-3.5 h-3.5 text-sky-500"></i>
+                  ${lesson.diagramHint}
+                </p>
+              </div>
+            </div>
+
+            <!-- Interactive Visual Diagram -->
+            <div class="pt-1">
+              ${renderInteractiveDiagram(lesson.id)}
+            </div>
+
+            <!-- Hộp giải thích động khi click node -->
+            <div id="diagram-detail-${lesson.id}" class="p-4 rounded-2xl bg-sky-50/70 dark:bg-sky-950/40 border border-sky-200/70 dark:border-sky-800/60">
+              <div class="flex items-center gap-2.5 text-xs text-sky-700 dark:text-sky-300 font-medium">
+                <i data-lucide="sparkles" class="w-4 h-4 shrink-0"></i>
+                <span>Mẹo học tập: Nhấp vào bất kỳ khối nào trong sơ đồ phía trên để xem phân tích chi tiết.</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- 3. 5 Điểm Ghi Nhớ Cốt Lõi -->
+          <section class="space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                <i data-lucide="bookmark-check" class="w-5 h-5 text-sky-500"></i>
+                5 Điểm Ghi Nhớ (Bài ${lesson.id})
+              </h3>
+              <span class="text-xs font-semibold text-slate-400">Kiến thức trọng tâm</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              ${lesson.takeaways.map((point, index) => `
+                <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-sky-400 dark:hover:border-sky-600 transition-all shadow-2xs flex flex-col gap-3 ${index === 4 ? 'md:col-span-2 lg:col-span-1' : ''}">
+                  <div class="flex items-center justify-between">
+                    <span class="w-8 h-8 rounded-xl bg-gradient-to-br from-sky-500 to-cyan-500 text-white font-extrabold text-sm flex items-center justify-center shadow-xs">
+                      ${index + 1}
+                    </span>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Điểm #${index + 1}</span>
+                  </div>
+                  <p class="text-sm font-medium text-slate-800 dark:text-slate-100 leading-relaxed">
+                    ${point}
+                  </p>
+                </div>
+              `).join('')}
+            </div>
+          </section>
+
+          <!-- 4. Ví Dụ Thực Tế Ứng Dụng -->
+          <section class="rounded-3xl bg-gradient-to-br from-amber-50/90 via-orange-50/50 to-yellow-50/80 dark:from-amber-950/30 dark:via-slate-900 dark:to-orange-950/20 border border-amber-200/80 dark:border-amber-800/60 p-6 sm:p-8 shadow-xs">
+            <div class="flex items-start gap-4">
+              <div class="w-11 h-11 rounded-2xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-md shadow-amber-500/20">
+                <i data-lucide="lightbulb" class="w-6 h-6"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider text-amber-700 dark:text-amber-400 mb-1">
+                  Ví dụ thực tế • ${lesson.caseStudy.tag}
+                </div>
+                <h4 class="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white">
+                  ${lesson.caseStudy.title}
+                </h4>
+                <p class="mt-2.5 text-sm sm:text-base text-slate-700 dark:text-slate-200 leading-relaxed">
+                  ${lesson.caseStudy.content}
+                </p>
+                ${extraCaseHTML}
+              </div>
+            </div>
+          </section>
+
+          <!-- 5. Khu vực Ghi Chú Cá Nhân -->
+          <section class="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-6 sm:p-8 shadow-xs space-y-3">
+            <div class="flex items-center justify-between gap-2">
+              <label for="noteInput-${lesson.id}" class="text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                <i data-lucide="notebook-pen" class="w-5 h-5 text-indigo-500"></i>
+                Ghi chú cá nhân (Bài ${lesson.id})
+              </label>
+              <span id="noteSaveStatus" class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 opacity-80">
+                <i data-lucide="check" class="w-3.5 h-3.5"></i> Đã lưu tự động
+              </span>
+            </div>
+            <textarea
+              id="noteInput-${lesson.id}"
+              rows="4"
+              oninput="handleNoteInput(${lesson.id}, this.value)"
+              placeholder="Ghi lại ý tưởng, câu hỏi ôn tập hoặc ví dụ mở rộng của riêng bạn cho Bài ${lesson.id}..."
+              class="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 focus:border-sky-500 focus:bg-white dark:focus:bg-slate-900 outline-none text-sm text-slate-800 dark:text-slate-100 placeholder:text-slate-400 transition-all leading-relaxed"
+            >${escapeHTML(savedNote)}</textarea>
+          </section>
+        </div>
+      `;
+    }
+
+    // Hiển thị kết quả tìm kiếm nhanh trên vùng nội dung chính
+    function renderSearchResultsBanner() {
+      const main = document.getElementById('mainContent');
+      const query = appState.searchQuery.toLowerCase();
+
+      const matches = LESSONS_DATA.filter(lesson => {
+        const text = [
+          lesson.title,
+          lesson.subtitle,
+          ...lesson.takeaways,
+          lesson.caseStudy.title,
+          lesson.caseStudy.content
+        ].join(' ').toLowerCase();
+        return text.includes(query);
+      });
+
+      main.innerHTML = `
+        <div class="space-y-6 animate-content">
+          <div class="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div class="text-xs font-bold uppercase text-sky-600 dark:text-sky-400">Kết quả tìm kiếm</div>
+              <h2 class="text-xl font-extrabold text-slate-900 dark:text-white mt-1">
+                Tìm thấy ${matches.length} chuyên đề khớp với “${escapeHTML(appState.searchQuery)}”
+              </h2>
+            </div>
+            <button onclick="clearSearch()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 self-start">
+              Xóa tìm kiếm
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            ${matches.map(lesson => `
+              <div onclick="clearSearch(); selectView(${lesson.id});" class="cursor-pointer p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-sky-500 transition-all shadow-2xs space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="px-2.5 py-0.5 rounded-lg bg-sky-500/10 text-sky-600 dark:text-sky-400 text-xs font-bold">Bài ${lesson.id}</span>
+                  <span class="text-xs text-sky-600 dark:text-sky-400 font-semibold flex items-center gap-1">Xem bài <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></span>
+                </div>
+                <h3 class="font-bold text-base text-slate-900 dark:text-white">${lesson.title}</h3>
+                <p class="text-xs text-slate-600 dark:text-slate-300 line-clamp-2">${lesson.caseStudy.title}: ${lesson.caseStudy.content}</p>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+      lucide.createIcons();
+    }
+
+    // Lưu ghi chú tự động
+    let noteTimeout = null;
+    function handleNoteInput(lessonId, value) {
+      appState.notes[lessonId] = value;
+      const statusEl = document.getElementById('noteSaveStatus');
+      if (statusEl) {
+        statusEl.innerHTML = `<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i> Đang lưu...`;
+        lucide.createIcons();
+      }
+      clearTimeout(noteTimeout);
+      noteTimeout = setTimeout(() => {
+        saveState();
+        if (statusEl) {
+          statusEl.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5"></i> Đã lưu tự động`;
+          lucide.createIcons();
+        }
+      }, 300);
+    }
+
+    // Modal Đặt lại dữ liệu
+    function openResetModal() {
+      const modal = document.getElementById('resetModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeResetModal() {
+      const modal = document.getElementById('resetModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function confirmResetData() {
+      appState.completedIds = [];
+      appState.notes = {};
+      saveState();
+      closeResetModal();
+      updateProgressUI();
+      renderSidebarList();
+      renderMainContent();
+    }
+
+    // Render nội dung chính dựa trên currentView
+    function renderMainContent() {
+      const main = document.getElementById('mainContent');
+      if (appState.currentView === 'overview') {
+        main.innerHTML = renderOverviewPage();
+      } else {
+        main.innerHTML = renderLessonPage(appState.currentView);
+      }
+      lucide.createIcons();
+    }
+
+    function escapeHTML(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // Khởi chạy ứng dụng khi tải trang
+    window.addEventListener('DOMContentLoaded', () => {
+      loadState();
+      updateProgressUI();
+      renderSidebarList();
+      renderMainContent();
+    });
+  </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="vi" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IT 4.0 Learning Hub - Thư viện Học tập Cá nhân</title>
+  <!-- Google Fonts: Be Vietnam Pro & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons via CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Be Vietnam Pro"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              300: '#7dd3fc',
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              800: '#075985',
+              900: '#0c4a6e',
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    /* Custom scrollbar mượt mà */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.4);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(14, 165, 233, 0.7);
+    }
+
+    /* Hiệu ứng chuyển động nhẹ nhàng cho các thẻ sơ đồ */
+    .diagram-node {
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .diagram-node:hover {
+      transform: translateY(-2px);
+    }
+    .diagram-node.active-node {
+      ring: 2px;
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.35);
+    }
+
+    /* Chevron shape cho Bài 1 */
+    @media (min-width: 768px) {
+      .chevron-card {
+        clip-path: polygon(0% 0%, 92% 0%, 100% 50%, 92% 100%, 0% 100%, 6% 50%);
+      }
+      .chevron-card-first {
+        clip-path: polygon(0% 0%, 92% 0%, 100% 50%, 92% 100%, 0% 100%);
+      }
+    }
+
+    /* Hiệu ứng fade-in khi chuyển bài */
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animate-content {
+      animation: fadeSlideUp 0.3s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 font-sans antialiased transition-colors duration-200 selection:bg-sky-500 selection:text-white">
+
+  <!-- Mobile Backdrop Overlay -->
+  <div id="mobileOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-30 hidden lg:hidden transition-opacity" onclick="toggleSidebar(false)"></div>
+
+  <div class="flex min-h-screen">
+    <!-- ================= SIDEBAR BÊN TRÁI ================= -->
+    <aside id="sidebar" class="fixed lg:sticky top-0 left-0 z-40 h-screen w-80 bg-white dark:bg-slate-900 border-r border-slate-200/80 dark:border-slate-800 flex flex-col transition-transform duration-300 -translate-x-full lg:translate-x-0 shadow-xl lg:shadow-none">
+      
+      <!-- 1. Logo & Tiêu đề -->
+      <div class="p-5 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+        <div class="flex items-center gap-3 cursor-pointer" onclick="selectView('overview')">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 via-cyan-500 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-sky-500/20 shrink-0">
+            <i data-lucide="cpu" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h1 class="font-extrabold text-base tracking-tight text-slate-900 dark:text-white leading-tight">IT 4.0 Learning Hub</h1>
+            <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Thư viện Học tập Cá nhân</p>
+          </div>
+        </div>
+        <button onclick="toggleSidebar(false)" class="lg:hidden p-2 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800" aria-label="Đóng menu">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- 2. Thanh Tiến độ học tập -->
+      <div class="px-5 py-4 bg-slate-50/70 dark:bg-slate-800/40 border-b border-slate-100 dark:border-slate-800/80">
+        <div class="flex items-center justify-between text-xs font-semibold mb-2">
+          <span class="text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+            <i data-lucide="award" class="w-3.5 h-3.5 text-sky-500"></i>
+            Tiến độ hoàn thành
+          </span>
+          <span id="progressCountText" class="text-sky-600 dark:text-sky-400 font-bold">0/8 chuyên đề</span>
+        </div>
+        <div class="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+          <div id="progressBar" class="h-full bg-gradient-to-r from-sky-500 to-cyan-400 rounded-full transition-all duration-500 ease-out" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- 3. Ô Tìm kiếm nhanh & 4. Bộ lọc trạng thái -->
+      <div class="p-4 space-y-3 border-b border-slate-100 dark:border-slate-800/80">
+        <div class="relative">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+          <input
+            id="searchInput"
+            type="text"
+            placeholder="Tìm từ khóa, khái niệm, ví dụ..."
+            oninput="handleSearch(this.value)"
+            class="w-full pl-9 pr-8 py-2 text-xs bg-slate-100/80 dark:bg-slate-800 border border-transparent focus:border-sky-500 focus:bg-white dark:focus:bg-slate-900 rounded-xl outline-none transition-all text-slate-800 dark:text-slate-100 placeholder:text-slate-400"
+          />
+          <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+            <i data-lucide="x-circle" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="grid grid-cols-3 gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs font-medium">
+          <button onclick="setFilter('all')" id="filter-all" class="filter-tab py-1.5 px-2 rounded-lg transition-all bg-white dark:bg-slate-700 text-sky-600 dark:text-sky-400 shadow-xs font-semibold">
+            Tất cả
+          </button>
+          <button onclick="setFilter('uncompleted')" id="filter-uncompleted" class="filter-tab py-1.5 px-2 rounded-lg transition-all text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+            Chưa học
+          </button>
+          <button onclick="setFilter('completed')" id="filter-completed" class="filter-tab py-1.5 px-2 rounded-lg transition-all text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+            Đã xong
+          </button>
+        </div>
+      </div>
+
+      <!-- 5. Danh mục Chuyên đề -->
+      <div class="flex-1 overflow-y-auto px-3 py-3 space-y-2">
+        <div class="px-2 flex items-center justify-between">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Danh mục 8 Chuyên đề</span>
+          <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 border border-sky-200/60 dark:border-sky-800/60">2025–2026</span>
+        </div>
+
+        <!-- Nút Bức tranh toàn cảnh IT 4.0 -->
+        <button
+          id="nav-overview"
+          onclick="selectView('overview')"
+          class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all group border border-transparent"
+        >
+          <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+            <i data-lucide="layers" class="w-4 h-4"></i>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="text-xs font-bold truncate">Bức tranh toàn cảnh IT 4.0</div>
+            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">Tổng kết 8 tầng kiến thức</div>
+          </div>
+        </button>
+
+        <div class="h-px bg-slate-100 dark:bg-slate-800/80 my-1"></div>
+
+        <!-- Danh sách 8 bài học (render bằng JS) -->
+        <div id="lessonList" class="space-y-1"></div>
+      </div>
+
+      <!-- 6. Footer Sidebar -->
+      <div class="p-4 border-t border-slate-200/80 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/80 space-y-2.5">
+        <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
+          <span class="flex items-center gap-1.5 font-medium text-emerald-600 dark:text-emerald-400">
+            <i data-lucide="cloud-check" class="w-3.5 h-3.5"></i>
+            Lưu tự động LocalStorage
+          </span>
+          <span class="font-mono text-[10px] opacity-75">v4.0</span>
+        </div>
+        <button
+          onclick="openResetModal()"
+          class="w-full py-2 px-3 rounded-xl text-xs font-semibold text-rose-600 dark:text-rose-400 bg-rose-50/80 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-950/70 border border-rose-200/60 dark:border-rose-900/50 flex items-center justify-center gap-1.5 transition-colors"
+        >
+          <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+          Đặt lại dữ liệu
+        </button>
+      </div>
+    </aside>
+
+    <!-- ================= KHU VỰC NỘI DUNG CHÍNH ================= -->
+    <div class="flex-1 flex flex-col min-w-0">
+      
+      <!-- Header phía trên khu vực nội dung chính -->
+      <header class="sticky top-0 z-20 bg-white/85 dark:bg-slate-900/85 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 px-4 sm:px-8 h-16 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3 min-w-0">
+          <button
+            onclick="toggleSidebar(true)"
+            class="lg:hidden p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700"
+            aria-label="Mở danh mục"
+          >
+            <i data-lucide="menu" class="w-5 h-5"></i>
+          </button>
+
+          <!-- Breadcrumb động -->
+          <nav class="flex items-center gap-2 text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 truncate">
+            <span class="hidden sm:inline hover:text-sky-600 dark:hover:text-sky-400 cursor-pointer transition-colors" onclick="selectView('overview')">
+              Hành trình Công nghệ Thông tin 4.0
+            </span>
+            <span class="sm:hidden font-semibold text-slate-700 dark:text-slate-200" onclick="selectView('overview')">IT 4.0</span>
+            <i data-lucide="chevron-right" class="w-4 h-4 shrink-0 text-slate-400"></i>
+            <span id="breadcrumbCurrent" class="font-bold text-slate-900 dark:text-white truncate">Bức tranh toàn cảnh</span>
+          </nav>
+        </div>
+
+        <!-- Các nút thao tác nhanh bên phải -->
+        <div class="flex items-center gap-2 shrink-0">
+          <!-- Nút chuyển đổi Dark / Light Mode -->
+          <button
+            onclick="toggleTheme()"
+            id="themeToggleBtn"
+            title="Chuyển đổi giao diện Sáng / Tối"
+            class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors border border-slate-200/60 dark:border-slate-700"
+          >
+            <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
+            <i data-lucide="sun" class="w-4 h-4 hidden dark:block text-amber-400"></i>
+          </button>
+
+          <!-- Nút điều hướng Bài trước / Bài tiếp theo -->
+          <div class="flex items-center gap-1.5">
+            <button
+              id="prevBtn"
+              onclick="navigateLesson(-1)"
+              class="px-3 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 flex items-center gap-1 transition-all disabled:opacity-40 disabled:pointer-events-none"
+            >
+              <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+              <span class="hidden sm:inline">Bài trước</span>
+            </button>
+            <button
+              id="nextBtn"
+              onclick="navigateLesson(1)"
+              class="px-3 py-2 rounded-xl text-xs font-semibold bg-sky-500 hover:bg-sky-600 text-white shadow-xs shadow-sky-500/25 flex items-center gap-1 transition-all disabled:opacity-40 disabled:pointer-events-none"
+            >
+              <span class="hidden sm:inline">Bài tiếp theo</span>
+              <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Content Container -->
+      <main id="mainContent" class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-8 py-6 sm:py-8 space-y-8">
+        <!-- Nội dung được render động tại đây -->
+      </main>
+
+      <!-- Footer nhỏ gọn -->
+      <footer class="max-w-5xl w-full mx-auto px-4 sm:px-8 py-6 border-t border-slate-200/70 dark:border-slate-800/80 text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500 dark:text-slate-400">
+        <div>
+          <span class="font-semibold text-slate-700 dark:text-slate-300">Hành Trình Công Nghệ Thông Tin 4.0</span> — Từ Nền Tảng Phần Cứng Đến Trí Tuệ Nhân Tạo & Đạo Đức Số (Bài 1 - Bài 8)
+        </div>
+        <div class="font-mono text-[11px] text-sky-600 dark:text-sky-400">IT 4.0 Learning Hub</div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ================= MODAL XÁC NHẬN ĐẶT LẠI DỮ LIỆU ================= -->
+  <div id="resetModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl animate-content">
+      <div class="flex items-start gap-4">
+        <div class="w-11 h-11 rounded-2xl bg-rose-100 dark:bg-rose-950/80 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+          <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+        </div>
+        <div class="flex-1">
+          <h3 class="text-lg font-bold text-slate-900 dark:text-white">Đặt lại dữ liệu học tập?</h3>
+          <p class="mt-2 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+            Hành động này sẽ xóa toàn bộ trạng thái <strong>Đã hoàn thành</strong> của 8 chuyên đề và tất cả <strong>Ghi chú cá nhân</strong> đã lưu trên trình duyệt này. Bạn không thể hoàn tác sau khi xác nhận.
+          </p>
+        </div>
+      </div>
+      <div class="mt-6 flex items-center justify-end gap-3">
+        <button
+          onclick="closeResetModal()"
+          class="px-4 py-2.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors"
+        >
+          Hủy
+        </button>
+        <button
+          onclick="confirmResetData()"
+          class="px-4 py-2.5 rounded-xl text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white shadow-md shadow-rose-600/20 transition-colors"
+        >
+          Xác nhận đặt lại
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= DỮ LIỆU & LOGIC ỨNG DỤNG ================= -->
+  <script>
+    // Dữ liệu chuẩn xác 100% từ tài liệu PDF "Hành_Trình_IT_4.0.pdf"
+    const LESSONS_DATA = [
+      {
+        id: 1,
+        shortTitle: "Nhập môn CNTT & Kỷ nguyên 4.0",
+        title: "Nhập môn CNTT & Kỷ nguyên Số 4.0",
+        subtitle: "Tiến hóa Công nghiệp & Chuyển đổi số",
+        icon: "cpu",
+        summary: "Khám phá sự tiến hóa từ cuộc Cách mạng Công nghiệp 1.0 đến 4.0, bản chất của chuyển đổi số toàn diện cùng các ngành nghề và kỹ năng cốt lõi trong kỷ nguyên thông minh.",
+        diagramTitle: "Sơ đồ Tiến hóa Công nghiệp",
+        diagramHint: "Nhấp vào từng giai đoạn cách mạng công nghiệp để xem đặc trưng cốt lõi",
+        takeaways: [
+          "CMCN 4.0 xoay quanh lõi kết nối số, AI, Big Data và hệ thống thông minh.",
+          "CNTT 4.0 tự động hóa quy trình lặp lại và kết nối vạn vật qua Internet.",
+          "Chuyển đổi số là thay đổi toàn diện cách vận hành, không chỉ công nghệ.",
+          "Ngành nghề mũi nhọn mới: Kỹ sư AI, Data Analyst, Cloud SysAdmin.",
+          "Kỹ năng cốt lõi: Tư duy lập trình, giải quyết vấn đề, tự học liên tục."
+        ],
+        caseStudy: {
+          title: "Chuyển đổi số doanh nghiệp",
+          tag: "Ứng dụng thực tế",
+          content: "Không chỉ là mua sắm thiết bị. Đó là quá trình số hóa quy trình làm việc thủ công lên hệ thống Cloud, dùng cảm biến (IoT) thu thập dữ liệu và AI đề ra quyết định, tạo ra một phương thức quản lý và vận hành hoàn toàn mới."
+        }
+      },
+      {
+        id: 2,
+        shortTitle: "Phần cứng & Kiến trúc Máy tính",
+        title: "Nền tảng Phần cứng & Kiến trúc Máy tính (von Neumann)",
+        subtitle: "Input → Process (CPU & RAM) → Output ↔ Storage",
+        icon: "hard-drive",
+        summary: "Hiểu rõ kiến trúc cốt lõi của máy tính hiện đại theo mô hình von Neumann, cơ chế phối hợp giữa khối xử lý trung tâm CPU, bộ nhớ tạm RAM và hệ thống lưu trữ SSD/ROM.",
+        diagramTitle: "Kiến trúc cốt lõi của Máy tính (von Neumann)",
+        diagramHint: "Nhấp vào từng thành phần phần cứng để tìm hiểu vai trò trong luồng dữ liệu",
+        takeaways: [
+          "Luồng dữ liệu chuẩn: Input -> Process -> Output -> Storage.",
+          "CPU: Bộ não thực hiện phép tính; sức mạnh đo bằng GHz và số nhân.",
+          "RAM: Truy xuất cực nhanh, mất dữ liệu khi tắt nguồn, quyết định đa nhiệm.",
+          "ROM: Nơi lưu trữ chương trình khởi động sống còn (BIOS/UEFI).",
+          "Storage: Ổ cứng SSD hiện đại ưu việt hơn HDD về tốc độ và độ bền."
+        ],
+        caseStudy: {
+          title: "Lựa chọn máy tính cho sinh viên CNTT",
+          tag: "Tư vấn cấu hình thực tế",
+          content: "Bỏ qua ngoại hình hào nhoáng. Ưu tiên lõi xử lý đa nhiệm với CPU đa nhân (Core i5/i7 hoặc Ryzen 5/7), RAM tối thiểu 16GB để phục vụ lập trình/chạy máy ảo, và ổ cứng SSD để tăng tốc độ truy xuất dữ liệu tối đa."
+        }
+      },
+      {
+        id: 3,
+        shortTitle: "Hệ điều hành & Môi trường số",
+        title: "Hệ điều hành & Chồng lớp Môi trường số",
+        subtitle: "Từ Phần cứng đến Hệ điều hành, Ảo hóa & AI-Integrated OS",
+        icon: "layers",
+        summary: "Phân tích kiến trúc phân lớp giữa Phần cứng, Hệ điều hành (OS) và Ứng dụng/Ảo hóa, đồng thời nắm bắt xu hướng hệ sinh thái hợp nhất và OS tích hợp AI.",
+        diagramTitle: "Chồng lớp Môi trường số (Layer Stack)",
+        diagramHint: "Nhấp vào từng tầng trong chồng lớp hoặc khối xu hướng để xem phân tích",
+        takeaways: [
+          "OS là nền tảng điều phối tài nguyên phần cứng & ứng dụng.",
+          "Đa nền tảng giúp đồng bộ dữ liệu liền mạch giữa nhiều thiết bị.",
+          "Hệ sinh thái hợp nhất tạo trải nghiệm xuyên suốt.",
+          "VM = Bảo mật & Cách ly; Docker = Linh hoạt & Tốc độ.",
+          "Tương lai: AI-Integrated OS tự động hóa tác vụ cốt lõi."
+        ],
+        caseStudy: {
+          title: "Ảo hóa (VM) vs. Container hóa (Docker)",
+          tag: "So sánh công nghệ triển khai",
+          content: "Virtual Machine (VM): Sử dụng khi cần môi trường cách ly, an toàn bảo mật tuyệt đối. Docker (Container): Sử dụng khi cần đóng gói phần mềm nhẹ nhàng, linh hoạt để triển khai với tốc độ cao lên Cloud.",
+          comparison: [
+            { label: "Virtual Machine (VM)", desc: "Sử dụng khi cần môi trường cách ly, an toàn bảo mật tuyệt đối." },
+            { label: "Docker (Container)", desc: "Sử dụng khi cần đóng gói phần mềm nhẹ nhàng, linh hoạt để triển khai với tốc độ cao lên Cloud." }
+          ]
+        }
+      },
+      {
+        id: 4,
+        shortTitle: "Phần mềm & Điện toán Đám mây",
+        title: "Phần mềm & Điện toán Đám mây (Cloud Computing)",
+        subtitle: "Kim tự tháp IaaS – PaaS – SaaS & 5 Đặc tính NIST",
+        icon: "cloud",
+        summary: "Nắm vững cấu trúc lõi của phần mềm, 5 đặc tính tiêu chuẩn NIST của điện toán đám mây, mô hình phân tầng dịch vụ IaaS → PaaS → SaaS và các hình thức triển khai Cloud.",
+        diagramTitle: "Kim Tự Tháp Điện Toán Đám Mây",
+        diagramHint: "Nhấp vào từng tầng của Kim tự tháp, 5 Đặc tính NIST hoặc Lõi phần mềm",
+        takeaways: [
+          "Phần mềm: Chia thành PM Hệ thống (nền tảng) và PM Ứng dụng (chuyên biệt).",
+          "5 Đặc tính Cloud: Truy cập rộng, tự phục vụ, co giãn, đo lường, dùng chung.",
+          "Cấu trúc dịch vụ: IaaS -> PaaS -> SaaS.",
+          "Triển khai: Public (Công cộng), Private (Riêng tư), Hybrid (Lai), Multi (Đa đám mây).",
+          "PaaS: Nhà cung cấp lo hạ tầng, lập trình viên chỉ cần tập trung viết code."
+        ],
+        caseStudy: {
+          title: "Phân biệt 3 Lớp Cloud",
+          tag: "Mô hình dịch vụ đám mây",
+          content: "IaaS: Thuê máy chủ ảo trống trên Amazon EC2. PaaS: Dùng môi trường có sẵn database/dev-tools để code app. SaaS: Dùng ngay Google Workspace / Microsoft 365 trên web.",
+          table: [
+            { tier: "IaaS", example: "Thuê máy chủ ảo trống trên Amazon EC2." },
+            { tier: "PaaS", example: "Dùng môi trường có sẵn database/dev-tools để code app." },
+            { tier: "SaaS", example: "Dùng ngay Google Workspace / Microsoft 365 trên web." }
+          ]
+        }
+      },
+      {
+        id: 5,
+        shortTitle: "Mạng máy tính, Internet & IoT / 6G",
+        title: "Mạng máy tính, Internet & Kết nối Vạn vật (IoT / 6G)",
+        subtitle: "Sự hội tụ của Mạng lưới số & Tầm nhìn tương lai 6G",
+        icon: "globe",
+        summary: "Phân biệt rõ hạ tầng mạng Internet và không gian thông tin WWW, khám phá sự bùng nổ của Internet vạn vật (IoT) và mạng di động thế hệ mới 6G.",
+        diagramTitle: "Sự Hội Tụ Của Mạng Lưới Số",
+        diagramHint: "Nhấp vào từng nút mạng để khám phá mối liên kết trong hệ sinh thái số",
+        takeaways: [
+          "Mạng máy tính: Hạ tầng kết nối thiết bị để chia sẻ tài nguyên.",
+          "Internet (hạ tầng mạng) và WWW (không gian thông tin) là khác biệt.",
+          "Mạng di động đang tiến hóa mạnh mẽ, hướng tới công nghệ đột phá 6G.",
+          "IoT: Biến mọi đồ vật vật lý thành thiết bị số có khả năng giao tiếp.",
+          "Kỹ năng sống còn: Ý thức sử dụng Internet an toàn và hiệu quả."
+        ],
+        caseStudy: {
+          title: "IoT Trong Thành Phố Thông Minh",
+          tag: "Hạ tầng kết nối vạn vật",
+          content: "Không chỉ smartphone kết nối mạng. Đèn giao thông, cảm biến thời tiết, camera và xe tự lái liên tục trao đổi dữ liệu qua mạng di động tốc độ cao để điều tiết giao thông và tối ưu năng lượng theo thời gian thực."
+        }
+      },
+      {
+        id: 6,
+        shortTitle: "Tư duy Lập trình & Tự động hóa",
+        title: "Tư duy Lập trình & Phân lớp Tự động hóa",
+        subtitle: "Quy trình 3 bước tư duy & Phân lớp BPA – RPA – IaC",
+        icon: "code-2",
+        summary: "Rèn luyện tư duy giải quyết vấn đề theo từng bước chính xác cho máy tính, phân biệt 3 cấp độ tự động hóa (BPA, RPA, IaC) và xu hướng Low-code, No-code, Vibe-code.",
+        diagramTitle: "Tư Duy Lập Trình & Phân Lớp Tự Động Hóa",
+        diagramHint: "Nhấp vào từng bước tư duy hoặc cấp độ tự động hóa để xem giải thích",
+        takeaways: [
+          "Tư duy lập trình: Tìm bản chất và xây dựng chỉ dẫn từng bước chính xác.",
+          "Máy tính không tự có trí tuệ, nó chỉ khuếch đại trí tuệ con người.",
+          "3 Cấp độ tự động hóa: Doanh nghiệp (BPA), Quy trình (RPA), Hạ tầng (IaC).",
+          "Xu hướng: Low-code, No-code và Vibe-code giúp triển khai cực nhanh.",
+          "Mục tiêu tối thượng: Tối ưu thời gian, loại bỏ các công việc lặp lại."
+        ],
+        caseStudy: {
+          title: "Tự Động Hóa Onboarding (RPA/BPA)",
+          tag: "Quy trình tự động hóa doanh nghiệp",
+          content: "Nhân viên mới nhận việc -> Hệ thống tự động đọc thông tin từ Database -> Tự tạo email nội bộ, Tự động cấp quyền phần mềm, Gửi lịch đào tạo. Không cần con người can thiệp thủ công, tiết kiệm thời gian chờ.",
+          steps: [
+            "Nhân viên mới nhận việc",
+            "Hệ thống tự động đọc thông tin từ Database",
+            "Tự tạo email nội bộ • Tự động cấp quyền phần mềm • Gửi lịch đào tạo"
+          ]
+        }
+      },
+      {
+        id: 7,
+        shortTitle: "AI, Big Data & Prompt Engineering",
+        title: "Trí tuệ Nhân tạo (AI), Big Data & Prompt Engineering",
+        subtitle: "Cỗ máy Trí tuệ Nhân tạo & Kỹ thuật giao tiếp AI hiệu quả",
+        icon: "brain-circuit",
+        summary: "Hiểu cơ chế vận hành của cỗ máy AI thông qua ẩn dụ Động cơ: Big Data là nhiên liệu, AI là lõi động cơ, và Chính sách Lấy Con Người Làm Trung Tâm là vô-lăng điều hướng.",
+        diagramTitle: "Cỗ Máy Trí Tuệ Nhân Tạo (Engine Metaphor)",
+        diagramHint: "Nhấp vào Nhiên liệu, Động cơ, Vô-lăng hoặc Lực đẩy để xem vai trò từng bộ phận",
+        takeaways: [
+          "Big Data là \"nguyên liệu thô\" vô giá của thời đại 4.0.",
+          "AI là \"động cơ\" chuyển hóa dữ liệu thành giá trị hữu ích.",
+          "Chính sách \"Con người làm trung tâm\" là vô-lăng định hướng.",
+          "Nắm vững Prompt Engineering là kỹ năng thiết yếu để giao tiếp với AI.",
+          "Hệ sinh thái dữ liệu bền vững là nền tảng cốt lõi của quốc gia."
+        ],
+        caseStudy: {
+          title: "Prompt Engineering Trong Công Việc",
+          tag: "Kỹ năng thực chiến với AI",
+          content: "Đừng ra lệnh chung chung. Viết một Prompt hoàn chỉnh gồm 4 yếu tố: Vai trò (Role) + Bối cảnh (Context) + Tác vụ chi tiết (Task) + Định dạng đầu ra (Format) để AI khai thác kho dữ liệu sắc bén nhất.",
+          formula: ["Vai trò (Role)", "Bối cảnh (Context)", "Tác vụ chi tiết (Task)", "Định dạng đầu ra (Format)"]
+        }
+      },
+      {
+        id: 8,
+        shortTitle: "An toàn Thông tin & Đạo đức Số",
+        title: "An toàn Thông tin, Pháp luật & Đạo đức Số",
+        subtitle: "Hệ thống phòng thủ đa lớp, ISMS (ISO 27000) & Chống Deepfake",
+        icon: "shield-check",
+        summary: "Xây dựng lá chắn bảo vệ toàn diện trên không gian mạng từ lõi Tam giác CIA, hệ thống quản lý an toàn thông tin ISMS (ISO 27000) đến đạo đức số và hành lang pháp lý Việt Nam.",
+        diagramTitle: "Hệ Thống Phòng Thủ & Đạo Đức Số",
+        diagramHint: "Nhấp vào từng vòng tròn bảo vệ từ ngoài vào trong để xem chi tiết lớp phòng thủ",
+        takeaways: [
+          "ISMS là phương pháp quản lý an ninh bài bản dựa trên đánh giá rủi ro.",
+          "Triển khai an toàn thông tin cần nhận thức, phân công và cải tiến liên tục.",
+          "Nhận diện và đối phó Deepfake là thách thức mới về đạo đức và kỹ thuật.",
+          "Pháp luật VN: Luật An ninh mạng, Luật AI, Luật Bảo vệ dữ liệu cá nhân.",
+          "Đạo đức số và trách nhiệm số là yêu cầu bắt buộc trên không gian mạng."
+        ],
+        caseStudy: {
+          title: "Triển Khai ISMS Tại Tổ Chức",
+          tag: "Quản trị rủi ro chủ động",
+          content: "Áp dụng hệ thống ISMS để đánh giá rủi ro liên tục. Chuyển từ trạng thái thụ động (bị tấn công mới khắc phục) sang chủ động phân công trách nhiệm, bịt lỗ hổng, bảo vệ tài sản thông tin từ khâu thiết kế."
+        }
+      }
+    ];
+
+    // Dữ liệu 8 tầng Bức tranh toàn cảnh (Trang 10 PDF)
+    const OVERVIEW_LAYERS = [
+      {
+        level: 8,
+        lessonId: 8,
+        title: "Tầng Quản trị & Đạo đức (Bài 8)",
+        desc: "An toàn thông tin, Pháp luật, Con người làm trung tâm.",
+        color: "from-rose-500 to-orange-500",
+        badgeBg: "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20"
+      },
+      {
+        level: 7,
+        lessonId: 7,
+        title: "Tầng Thông minh (Bài 7)",
+        desc: "AI, Big Data, Prompt Engineering.",
+        color: "from-violet-500 to-purple-600",
+        badgeBg: "bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-500/20"
+      },
+      {
+        level: 6,
+        lessonId: 6,
+        title: "Tầng Logic (Bài 6)",
+        desc: "Tư duy lập trình, Low-code, Tự động hóa (BPA, RPA).",
+        color: "from-indigo-500 to-blue-600",
+        badgeBg: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20"
+      },
+      {
+        level: 5,
+        lessonId: 5,
+        title: "Tầng Kết nối (Bài 5)",
+        desc: "Mạng máy tính, Internet, 6G, IoT.",
+        color: "from-sky-500 to-cyan-500",
+        badgeBg: "bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20"
+      },
+      {
+        level: 4,
+        lessonId: 4,
+        title: "Tầng Ứng dụng & Dịch vụ (Bài 4)",
+        desc: "Phần mềm, Cloud (IaaS, PaaS, SaaS).",
+        color: "from-teal-500 to-emerald-500",
+        badgeBg: "bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/20"
+      },
+      {
+        level: 3,
+        lessonId: 3,
+        title: "Tầng Điều phối (Bài 3)",
+        desc: "Hệ điều hành, Ảo hóa, Container.",
+        color: "from-emerald-500 to-green-600",
+        badgeBg: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
+      },
+      {
+        level: 2,
+        lessonId: 2,
+        title: "Tầng Phần cứng (Bài 2)",
+        desc: "Input, Process, Output, Storage.",
+        color: "from-amber-500 to-yellow-600",
+        badgeBg: "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20"
+      },
+      {
+        level: 1,
+        lessonId: 1,
+        title: "Nền tảng lịch sử (Bài 1)",
+        desc: "Chuyển đổi số & Các cuộc CMCN.",
+        color: "from-slate-600 to-slate-800",
+        badgeBg: "bg-slate-500/10 text-slate-700 dark:text-slate-300 border-slate-500/20"
+      }
+    ];
+
+    // Trạng thái ứng dụng (lưu trữ qua LocalStorage)
+    const STORAGE_KEY = 'it40_learning_hub_state_v1';
+    let appState = {
+      currentView: 'overview', // 'overview' hoặc số từ 1 đến 8
+      completedIds: [],
+      notes: {},
+      filter: 'all', // 'all', 'uncompleted', 'completed'
+      searchQuery: '',
+      theme: 'light'
+    };
+
+    // Khởi tạo từ LocalStorage
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          appState = {
+            ...appState,
+            ...parsed,
+            completedIds: Array.isArray(parsed.completedIds) ? parsed.completedIds : [],
+            notes: typeof parsed.notes === 'object' && parsed.notes !== null ? parsed.notes : {}
+          };
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          appState.theme = 'dark';
+        }
+      } catch (e) {
+        console.warn('Không thể đọc LocalStorage:', e);
+      }
+      applyTheme(appState.theme);
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          currentView: appState.currentView,
+          completedIds: appState.completedIds,
+          notes: appState.notes,
+          theme: appState.theme
+        }));
+      } catch (e) {
+        console.warn('Không thể lưu LocalStorage:', e);
+      }
+    }
+
+    // Chuyển đổi Sáng / Tối
+    function applyTheme(theme) {
+      const html = document.documentElement;
+      if (theme === 'dark') {
+        html.classList.add('dark');
+      } else {
+        html.classList.remove('dark');
+      }
+    }
+
+    function toggleTheme() {
+      appState.theme = appState.theme === 'dark' ? 'light' : 'dark';
+      applyTheme(appState.theme);
+      saveState();
+    }
+
+    // Điều khiển Sidebar trên Mobile
+    function toggleSidebar(open) {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('mobileOverlay');
+      if (open) {
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+      } else {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+      }
+    }
+
+    // Tìm kiếm & Lọc
+    function handleSearch(value) {
+      appState.searchQuery = value.trim();
+      const clearBtn = document.getElementById('clearSearchBtn');
+      if (appState.searchQuery.length > 0) {
+        clearBtn.classList.remove('hidden');
+      } else {
+        clearBtn.classList.add('hidden');
+      }
+      renderSidebarList();
+      if (appState.searchQuery.length > 0) {
+        renderSearchResultsBanner();
+      } else {
+        renderMainContent();
+      }
+    }
+
+    function clearSearch() {
+      const input = document.getElementById('searchInput');
+      input.value = '';
+      handleSearch('');
+    }
+
+    function setFilter(filterType) {
+      appState.filter = filterType;
+      document.querySelectorAll('.filter-tab').forEach(btn => {
+        btn.classList.remove('bg-white', 'dark:bg-slate-700', 'text-sky-600', 'dark:text-sky-400', 'shadow-xs', 'font-semibold');
+        btn.classList.add('text-slate-600', 'dark:text-slate-400');
+      });
+      const activeBtn = document.getElementById(`filter-${filterType}`);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-white', 'dark:bg-slate-700', 'text-sky-600', 'dark:text-sky-400', 'shadow-xs', 'font-semibold');
+        activeBtn.classList.remove('text-slate-600', 'dark:text-slate-400');
+      }
+      renderSidebarList();
+    }
+
+    // Đánh dấu hoàn thành bài học
+    function toggleLessonComplete(lessonId) {
+      const idx = appState.completedIds.indexOf(lessonId);
+      if (idx === -1) {
+        appState.completedIds.push(lessonId);
+      } else {
+        appState.completedIds.splice(idx, 1);
+      }
+      saveState();
+      updateProgressUI();
+      renderSidebarList();
+      renderMainContent();
+    }
+
+    // Cập nhật thanh tiến độ ở Sidebar
+    function updateProgressUI() {
+      const count = appState.completedIds.length;
+      const total = LESSONS_DATA.length;
+      const pct = Math.round((count / total) * 100);
+      document.getElementById('progressCountText').textContent = `${count}/${total} chuyên đề`;
+      document.getElementById('progressBar').style.width = `${pct}%`;
+    }
+
+    // Chọn chuyên đề hoặc Bức tranh toàn cảnh
+    function selectView(view) {
+      appState.currentView = view;
+      saveState();
+      toggleSidebar(false);
+      renderSidebarList();
+      renderMainContent();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Điều hướng Bài trước / Bài tiếp theo
+    function navigateLesson(delta) {
+      if (appState.currentView === 'overview') {
+        if (delta > 0) selectView(1);
+        return;
+      }
+      const nextId = Number(appState.currentView) + delta;
+      if (nextId < 1) {
+        selectView('overview');
+      } else if (nextId <= 8) {
+        selectView(nextId);
+      }
+    }
+
+    // Render danh sách chuyên đề bên Sidebar
+    function renderSidebarList() {
+      const listEl = document.getElementById('lessonList');
+      const overviewBtn = document.getElementById('nav-overview');
+      const query = appState.searchQuery.toLowerCase();
+
+      // Highlight nút Overview
+      if (appState.currentView === 'overview') {
+        overviewBtn.className = 'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all bg-indigo-50/90 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-800/80 shadow-xs';
+      } else {
+        overviewBtn.className = 'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all hover:bg-slate-100/80 dark:hover:bg-slate-800/70 text-slate-700 dark:text-slate-300 border border-transparent';
+      }
+
+      const filtered = LESSONS_DATA.filter(lesson => {
+        const isDone = appState.completedIds.includes(lesson.id);
+        if (appState.filter === 'completed' && !isDone) return false;
+        if (appState.filter === 'uncompleted' && isDone) return false;
+
+        if (!query) return true;
+        const searchableText = [
+          `bài ${lesson.id}`,
+          lesson.title,
+          lesson.shortTitle,
+          lesson.subtitle,
+          ...lesson.takeaways,
+          lesson.caseStudy.title,
+          lesson.caseStudy.content
+        ].join(' ').toLowerCase();
+        return searchableText.includes(query);
+      });
+
+      if (filtered.length === 0) {
+        listEl.innerHTML = `
+          <div class="px-3 py-6 text-center text-xs text-slate-400 dark:text-slate-500">
+            Không tìm thấy chuyên đề phù hợp.
+          </div>
+        `;
+        return;
+      }
+
+      listEl.innerHTML = filtered.map(lesson => {
+        const isActive = appState.currentView === lesson.id;
+        const isDone = appState.completedIds.includes(lesson.id);
+
+        const activeClasses = isActive
+          ? 'bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border-sky-200/90 dark:border-sky-800/80 shadow-xs font-semibold'
+          : 'hover:bg-slate-100/80 dark:hover:bg-slate-800/70 text-slate-700 dark:text-slate-300 border-transparent';
+
+        const badgeClasses = isActive
+          ? 'bg-sky-500 text-white'
+          : isDone
+            ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400'
+            : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400';
+
+        return `
+          <button
+            onclick="selectView(${lesson.id})"
+            class="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-left transition-all border ${activeClasses}"
+          >
+            <span class="w-6 h-6 rounded-lg text-[11px] font-bold flex items-center justify-center shrink-0 ${badgeClasses}">
+              ${lesson.id}
+            </span>
+            <span class="text-xs flex-1 truncate leading-snug">
+              ${lesson.shortTitle}
+            </span>
+            ${isDone
+              ? `<span class="w-5 h-5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0" title="Đã hoàn thành">
+                   <i data-lucide="check" class="w-3.5 h-3.5 stroke-[2.5]"></i>
+                 </span>`
+              : `<span class="w-2 h-2 rounded-full bg-slate-200 dark:bg-slate-700 shrink-0"></span>`
+            }
+          </button>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    // Hiển thị thông báo chi tiết khi người dùng click vào từng khối trong sơ đồ tương tác
+    function showDiagramDetail(lessonId, title, detail) {
+      const box = document.getElementById(`diagram-detail-${lessonId}`);
+      if (!box) return;
+      box.innerHTML = `
+        <div class="flex items-start gap-3 animate-content">
+          <div class="w-8 h-8 rounded-lg bg-sky-500/15 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0 mt-0.5">
+            <i data-lucide="info" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <div class="text-xs font-bold text-sky-700 dark:text-sky-300 uppercase tracking-wide">${title}</div>
+            <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-200 mt-1 leading-relaxed">${detail}</p>
+          </div>
+        </div>
+      `;
+      lucide.createIcons();
+    }
+
+    // Tạo Sơ đồ Trực quan Tương tác riêng cho từng bài (1 đến 8) bám sát 100% PDF
+    function renderInteractiveDiagram(lessonId) {
+      switch (lessonId) {
+        case 1:
+          return `
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+              <button onclick="showDiagramDetail(1, 'Cách mạng Công nghiệp 1.0', 'Cơ khí hóa sản xuất dựa trên động cơ hơi nước và năng lượng nước, đánh dấu bước chuyển từ lao động thủ công sang máy móc.')"
+                class="diagram-node chevron-card-first text-left p-5 rounded-2xl md:rounded-none bg-slate-100 hover:bg-slate-200/80 dark:bg-slate-800 dark:hover:bg-slate-700/90 border border-slate-200 dark:border-slate-700 flex flex-col justify-between min-h-[132px]">
+                <div class="w-9 h-9 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center mb-3">
+                  <i data-lucide="settings" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <div class="text-xs font-extrabold text-slate-500 dark:text-slate-400">1.0</div>
+                  <div class="text-sm font-bold text-slate-900 dark:text-white mt-0.5">Cơ khí / Hơi nước</div>
+                </div>
+              </button>
+
+              <button onclick="showDiagramDetail(1, 'Cách mạng Công nghiệp 2.0', 'Ứng dụng điện năng và dây chuyền lắp ráp để tạo ra kỷ nguyên sản xuất hàng loạt quy mô lớn.')"
+                class="diagram-node chevron-card text-left p-5 md:pl-8 rounded-2xl md:rounded-none bg-slate-100 hover:bg-slate-200/80 dark:bg-slate-800 dark:hover:bg-slate-700/90 border border-slate-200 dark:border-slate-700 flex flex-col justify-between min-h-[132px]">
+                <div class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-3">
+                  <i data-lucide="zap" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <div class="text-xs font-extrabold text-amber-600 dark:text-amber-400">2.0</div>
+                  <div class="text-sm font-bold text-slate-900 dark:text-white mt-0.5">Điện năng / Sản xuất hàng loạt</div>
+                </div>
+              </button>
+
+              <button onclick="showDiagramDetail(1, 'Cách mạng Công nghiệp 3.0', 'Sự ra đời của máy tính, chất bán dẫn và điện tử giúp tự động hóa các dây chuyền sản xuất.')"
+                class="diagram-node chevron-card text-left p-5 md:pl-8 rounded-2xl md:rounded-none bg-slate-100 hover:bg-slate-200/80 dark:bg-slate-800 dark:hover:bg-slate-700/90 border border-slate-200 dark:border-slate-700 flex flex-col justify-between min-h-[132px]">
+                <div class="w-9 h-9 rounded-xl bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-3">
+                  <i data-lucide="cpu" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <div class="text-xs font-extrabold text-indigo-600 dark:text-indigo-400">3.0</div>
+                  <div class="text-sm font-bold text-slate-900 dark:text-white mt-0.5">Tự động hóa / Máy tính</div>
+                </div>
+              </button>
+
+              <button onclick="showDiagramDetail(1, 'Cách mạng Công nghiệp 4.0 (Hiện tại)', 'Xoay quanh lõi kết nối số, Trí tuệ nhân tạo (AI), Internet vạn vật (IoT) và Dữ liệu lớn (Big Data) tạo thành hệ thống thông minh.')"
+                class="diagram-node chevron-card text-left p-5 md:pl-8 rounded-2xl md:rounded-none bg-gradient-to-br from-sky-500 to-cyan-500 text-white shadow-lg shadow-sky-500/20 flex flex-col justify-between min-h-[132px]">
+                <div class="w-9 h-9 rounded-xl bg-white/20 text-white flex items-center justify-center mb-3">
+                  <i data-lucide="cloud-cog" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <div class="text-xs font-extrabold text-sky-100">4.0 • KỶ NGUYÊN SỐ</div>
+                  <div class="text-sm font-extrabold text-white mt-0.5">Kết nối số / AI / IoT / Big Data</div>
+                </div>
+              </button>
+            </div>
+          `;
+
+        case 2:
+          return `
+            <div class="space-y-4">
+              <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
+                <!-- Input -->
+                <button onclick="showDiagramDetail(2, 'Input (Khối Nhập)', 'Tiếp nhận dữ liệu và chỉ thị từ thế giới bên ngoài vào máy tính thông qua bàn phím, chuột, cảm biến, micro, camera...')"
+                  class="diagram-node lg:col-span-3 p-4 rounded-2xl bg-sky-50 dark:bg-sky-950/40 border-2 border-sky-200 dark:border-sky-800/80 text-center hover:border-sky-500">
+                  <div class="w-10 h-10 mx-auto rounded-xl bg-sky-500 text-white flex items-center justify-center mb-2">
+                    <i data-lucide="log-in" class="w-5 h-5"></i>
+                  </div>
+                  <div class="font-bold text-sm text-slate-900 dark:text-white">Input (Nhập)</div>
+                  <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Tiếp nhận dữ liệu đầu vào</div>
+                </button>
+
+                <!-- Arrow -->
+                <div class="lg:col-span-1 flex justify-center text-sky-500">
+                  <i data-lucide="arrow-right" class="w-6 h-6 hidden lg:block"></i>
+                  <i data-lucide="arrow-down" class="w-6 h-6 lg:hidden"></i>
+                </div>
+
+                <!-- Process (CPU + RAM) -->
+                <div class="lg:col-span-4 p-4 rounded-2xl bg-gradient-to-b from-slate-900 to-slate-800 text-white border-2 border-sky-500/60 shadow-lg">
+                  <div class="text-center text-xs font-extrabold uppercase tracking-wider text-sky-400 mb-3">
+                    Process (Xử lý)
+                  </div>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <button onclick="showDiagramDetail(2, 'CPU (Điều khiển & Tính toán)', 'Bộ não thực hiện mọi phép tính logic và điều phối hoạt động. Sức mạnh đo bằng xung nhịp (GHz) và số nhân xử lý.')"
+                      class="diagram-node p-3 rounded-xl bg-slate-800/90 hover:bg-slate-700 border border-sky-400/40 text-left">
+                      <div class="flex items-center gap-2 text-sky-400 font-bold text-xs mb-1">
+                        <i data-lucide="cpu" class="w-4 h-4"></i> CPU
+                      </div>
+                      <div class="text-[11px] text-slate-300 leading-snug">Điều khiển & Tính toán</div>
+                    </button>
+                    <button onclick="showDiagramDetail(2, 'RAM (Bộ nhớ tạm)', 'Bộ nhớ truy xuất ngẫu nhiên tốc độ cực nhanh, lưu trữ dữ liệu đang chạy. Mất dữ liệu khi tắt nguồn và quyết định khả năng đa nhiệm.')"
+                      class="diagram-node p-3 rounded-xl bg-slate-800/90 hover:bg-slate-700 border border-cyan-400/40 text-left">
+                      <div class="flex items-center gap-2 text-cyan-400 font-bold text-xs mb-1">
+                        <i data-lucide="memory-stick" class="w-4 h-4"></i> RAM
+                      </div>
+                      <div class="text-[11px] text-slate-300 leading-snug">Bộ nhớ tạm (Đa nhiệm)</div>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Arrow -->
+                <div class="lg:col-span-1 flex justify-center text-sky-500">
+                  <i data-lucide="arrow-right" class="w-6 h-6 hidden lg:block"></i>
+                  <i data-lucide="arrow-down" class="w-6 h-6 lg:hidden"></i>
+                </div>
+
+                <!-- Output -->
+                <button onclick="showDiagramDetail(2, 'Output (Khối Xuất)', 'Hiển thị và truyền tải kết quả sau khi xử lý ra màn hình, loa, máy in hoặc cơ cấu chấp hành.')"
+                  class="diagram-node lg:col-span-3 p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border-2 border-emerald-200 dark:border-emerald-800/80 text-center hover:border-emerald-500">
+                  <div class="w-10 h-10 mx-auto rounded-xl bg-emerald-500 text-white flex items-center justify-center mb-2">
+                    <i data-lucide="monitor" class="w-5 h-5"></i>
+                  </div>
+                  <div class="font-bold text-sm text-slate-900 dark:text-white">Output (Xuất)</div>
+                  <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Hiển thị kết quả xử lý</div>
+                </button>
+              </div>
+
+              <!-- Kết nối hai chiều với Storage -->
+              <div class="flex flex-col items-center">
+                <div class="flex items-center gap-2 text-sky-500 py-1">
+                  <i data-lucide="arrow-up-down" class="w-5 h-5"></i>
+                  <span class="text-[11px] font-semibold uppercase tracking-wider">Trao đổi dữ liệu 2 chiều</span>
+                </div>
+                <button onclick="showDiagramDetail(2, 'Storage (Lưu trữ: HDD/SSD, ROM)', 'Lưu trữ dữ liệu lâu dài không bị mất khi tắt máy. Ổ cứng SSD hiện đại ưu việt hơn HDD về tốc độ và độ bền; ROM lưu chương trình khởi động BIOS/UEFI.')"
+                  class="diagram-node w-full max-w-xl p-4 rounded-2xl bg-indigo-50/80 dark:bg-indigo-950/40 border-2 border-indigo-200 dark:border-indigo-800/80 hover:border-indigo-500 flex items-center justify-center gap-3">
+                  <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0">
+                    <i data-lucide="hard-drive" class="w-5 h-5"></i>
+                  </div>
+                  <div class="text-left">
+                    <div class="font-bold text-sm text-slate-900 dark:text-white">Storage (Lưu trữ: HDD/SSD, ROM)</div>
+                    <div class="text-xs text-slate-500 dark:text-slate-400">SSD tốc độ cao & ROM chứa BIOS/UEFI</div>
+                  </div>
+                </button>
+              </div>
+            </div>
+          `;
+
+        case 3:
+          return `
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
+              <!-- Chồng lớp 3 tầng -->
+              <div class="lg:col-span-8 space-y-3">
+                <button onclick="showDiagramDetail(3, 'Tầng trên: Ứng dụng / Môi trường ảo (Apps & Virtualization)', 'Bao gồm các phần mềm phục vụ người dùng cuối và môi trường ảo hóa (VM) hoặc đóng gói nhẹ (Docker Container) chạy trên nền hệ điều hành.')"
+                  class="diagram-node w-full p-4 rounded-2xl bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 shadow-sm hover:border-sky-500 flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <span class="w-9 h-9 rounded-xl bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                      <i data-lucide="app-window" class="w-5 h-5"></i>
+                    </span>
+                    <div class="text-left">
+                      <div class="text-sm font-bold text-slate-900 dark:text-white">Ứng dụng / Môi trường ảo (Apps & Virtualization)</div>
+                      <div class="text-xs text-slate-500 dark:text-slate-400">Phần mềm chuyên biệt, Máy ảo (VM) & Container (Docker)</div>
+                    </div>
+                  </div>
+                  <span class="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">Tầng 3</span>
+                </button>
+
+                <button onclick="showDiagramDetail(3, 'Tầng giữa: Hệ điều hành (OS) - Nền tảng điều phối', 'Đóng vai trò trung gian điều phối toàn bộ tài nguyên phần cứng (CPU, RAM, Ổ cứng) cho các ứng dụng hoạt động trơn tru và đồng bộ đa nền tảng.')"
+                  class="diagram-node w-full p-4 rounded-2xl bg-gradient-to-r from-sky-500 to-cyan-500 text-white shadow-md shadow-sky-500/20 flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <span class="w-9 h-9 rounded-xl bg-white/20 text-white flex items-center justify-center">
+                      <i data-lucide="cpu" class="w-5 h-5"></i>
+                    </span>
+                    <div class="text-left">
+                      <div class="text-sm font-bold">Hệ điều hành (OS) - Nền tảng điều phối</div>
+                      <div class="text-xs text-sky-100">Quản lý tài nguyên, giao diện & kết nối phần cứng - phần mềm</div>
+                    </div>
+                  </div>
+                  <span class="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-white/20 text-white">Tầng 2</span>
+                </button>
+
+                <button onclick="showDiagramDetail(3, 'Tầng đáy: Phần cứng (Hardware)', 'Nền tảng vật lý cơ bản gồm vi xử lý, bộ nhớ, thiết bị lưu trữ và ngoại vi tạo nên sức mạnh tính toán gốc.')"
+                  class="diagram-node w-full p-4 rounded-2xl bg-slate-200/80 dark:bg-slate-800/90 border-2 border-slate-300 dark:border-slate-700 hover:border-sky-500 flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <span class="w-9 h-9 rounded-xl bg-slate-700 text-white flex items-center justify-center">
+                      <i data-lucide="server" class="w-5 h-5"></i>
+                    </span>
+                    <div class="text-left">
+                      <div class="text-sm font-bold text-slate-900 dark:text-white">Phần cứng (Hardware)</div>
+                      <div class="text-xs text-slate-600 dark:text-slate-400">CPU, RAM, Storage, Thiết bị vật lý</div>
+                    </div>
+                  </div>
+                  <span class="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-slate-300/70 dark:bg-slate-700 text-slate-700 dark:text-slate-300">Tầng 1</span>
+                </button>
+              </div>
+
+              <!-- Cột Xu hướng -->
+              <div class="lg:col-span-4">
+                <button onclick="showDiagramDetail(3, 'Xu hướng: Hệ sinh thái hợp nhất & OS tích hợp AI', 'Các thiết bị kết nối liền mạch trong một hệ sinh thái hợp nhất (Unified Ecosystem), đồng thời AI được tích hợp sâu vào nhân Hệ điều hành để tự động hóa các tác vụ cốt lõi.')"
+                  class="diagram-node w-full h-full p-5 rounded-2xl bg-indigo-50/90 dark:bg-indigo-950/50 border-2 border-dashed border-indigo-300 dark:border-indigo-700 text-left hover:border-indigo-500">
+                  <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-indigo-600 text-white text-[11px] font-bold mb-3">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> XU HƯỚNG TƯƠNG LAI
+                  </div>
+                  <h4 class="font-bold text-sm text-slate-900 dark:text-white leading-snug">
+                    Hệ sinh thái hợp nhất (Unified Ecosystem) & OS tích hợp AI
+                  </h4>
+                  <p class="text-xs text-slate-600 dark:text-slate-300 mt-2 leading-relaxed">
+                    Đồng bộ dữ liệu xuyên suốt đa thiết bị và tự động hóa tác vụ cốt lõi ngay từ cấp độ hệ điều hành.
+                  </p>
+                </button>
+              </div>
+            </div>
+          `;
+
+        case 4:
+          return `
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
+              <!-- Trái: 5 Đặc tính NIST -->
+              <div class="lg:col-span-3">
+                <button onclick="showDiagramDetail(4, '5 Đặc tính Cloud theo chuẩn NIST', '1. Truy cập mạng rộng rãi (Broad Network Access) • 2. Tự phục vụ theo nhu cầu (On-demand Self-service) • 3. Co giãn linh hoạt (Rapid Elasticity) • 4. Đo lường dịch vụ (Measured Service) • 5. Dùng chung tài nguyên (Resource Pooling).')"
+                  class="diagram-node w-full p-4 rounded-2xl bg-slate-100 dark:bg-slate-800 border-2 border-sky-200 dark:border-sky-800 text-left hover:border-sky-500">
+                  <div class="text-xs font-extrabold text-sky-600 dark:text-sky-400 uppercase mb-2 flex items-center gap-1.5">
+                    <i data-lucide="check-circle-2" class="w-4 h-4"></i> 5 Đặc tính NIST
+                  </div>
+                  <ul class="text-xs space-y-1.5 text-slate-700 dark:text-slate-300 font-medium">
+                    <li>• Truy cập rộng</li>
+                    <li>• Tự phục vụ</li>
+                    <li>• Co giãn linh hoạt</li>
+                    <li>• Đo lường dịch vụ</li>
+                    <li>• Dùng chung tài nguyên</li>
+                  </ul>
+                </button>
+              </div>
+
+              <!-- Giữa: Kim tự tháp 3 tầng -->
+              <div class="lg:col-span-6 flex flex-col items-center space-y-2.5">
+                <button onclick="showDiagramDetail(4, 'SaaS (Phần mềm - Software as a Service)', 'Người dùng sử dụng trực tiếp ứng dụng hoàn chỉnh qua trình duyệt web mà không cần cài đặt hay quản lý hạ tầng (VD: Google Workspace, Microsoft 365).')"
+                  class="diagram-node w-3/5 py-3.5 px-4 rounded-t-3xl rounded-b-xl bg-gradient-to-r from-orange-500 to-amber-500 text-white text-center shadow-md">
+                  <div class="font-extrabold text-sm">SaaS</div>
+                  <div class="text-[11px] text-orange-50">(Phần mềm - Software)</div>
+                </button>
+
+                <button onclick="showDiagramDetail(4, 'PaaS (Nền tảng - Platform as a Service)', 'Nhà cung cấp lo toàn bộ hạ tầng máy chủ, hệ điều hành và công cụ phát triển; lập trình viên chỉ cần tập trung viết code và triển khai ứng dụng.')"
+                  class="diagram-node w-4/5 py-3.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-sky-500 text-white text-center shadow-md">
+                  <div class="font-extrabold text-sm">PaaS</div>
+                  <div class="text-[11px] text-cyan-50">(Nền tảng - Platform)</div>
+                </button>
+
+                <button onclick="showDiagramDetail(4, 'IaaS (Hạ tầng - Infrastructure as a Service)', 'Cung cấp tài nguyên hạ tầng tính toán ảo hóa cơ bản như máy chủ ảo, lưu trữ, mạng (VD: thuê máy chủ ảo trống trên Amazon EC2).')"
+                  class="diagram-node w-full py-4 px-4 rounded-b-2xl rounded-t-xl bg-gradient-to-r from-blue-700 to-indigo-800 text-white text-center shadow-md">
+                  <div class="font-extrabold text-sm">IaaS</div>
+                  <div class="text-[11px] text-blue-100">(Hạ tầng - Infrastructure)</div>
+                </button>
+              </div>
+
+              <!-- Phải: Lõi phần mềm -->
+              <div class="lg:col-span-3">
+                <button onclick="showDiagramDetail(4, '4 Thành phần Lõi phần mềm', 'Một hệ thống phần mềm hoàn chỉnh không chỉ có mã nguồn (Code) mà còn bao gồm Quy trình vận hành (Procedures), Tài liệu hướng dẫn (Documentation) và Dữ liệu (Data).')"
+                  class="diagram-node w-full p-4 rounded-2xl bg-slate-100 dark:bg-slate-800 border-2 border-indigo-200 dark:border-indigo-800 text-left hover:border-indigo-500">
+                  <div class="text-xs font-extrabold text-indigo-600 dark:text-indigo-400 uppercase mb-2 flex items-center gap-1.5">
+                    <i data-lucide="package" class="w-4 h-4"></i> Lõi phần mềm
+                  </div>
+                  <ul class="text-xs space-y-1.5 text-slate-700 dark:text-slate-300 font-medium">
+                    <li>• Code (Mã nguồn)</li>
+                    <li>• Procedures (Quy trình)</li>
+                    <li>• Documentation (Tài liệu)</li>
+                    <li>• Data (Dữ liệu)</li>
+                  </ul>
+                </button>
+              </div>
+            </div>
+          `;
+
+        case 5:
+          return `
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+              <!-- Mạng máy tính cơ bản -->
+              <button onclick="showDiagramDetail(5, 'Mạng Máy Tính Cơ Bản (Computer Networks)', 'Hạ tầng kết nối các thiết bị máy tính lại với nhau nhằm chia sẻ tài nguyên, dữ liệu và dịch vụ nội bộ hoặc diện rộng.')"
+                class="diagram-node p-5 rounded-2xl bg-slate-100 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-sky-500 text-center">
+                <div class="w-11 h-11 mx-auto rounded-full bg-sky-500/15 text-sky-600 dark:text-sky-400 flex items-center justify-center mb-3">
+                  <i data-lucide="network" class="w-5 h-5"></i>
+                </div>
+                <div class="font-bold text-sm text-slate-900 dark:text-white">Mạng Máy Tính Cơ Bản</div>
+                <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">(Computer Networks)</div>
+              </button>
+
+              <!-- Trung tâm: Internet / WWW -->
+              <button onclick="showDiagramDetail(5, 'Trung tâm: Internet / WWW', 'Internet là hạ tầng mạng toàn cầu kết nối hàng tỷ thiết bị; còn WWW (World Wide Web) là không gian thông tin tài liệu/trang web hoạt động trên nền Internet.')"
+                class="diagram-node p-6 rounded-3xl bg-gradient-to-br from-sky-500 via-cyan-500 to-indigo-600 text-white shadow-xl shadow-sky-500/25 text-center">
+                <div class="w-14 h-14 mx-auto rounded-full bg-white/20 flex items-center justify-center mb-3">
+                  <i data-lucide="globe" class="w-7 h-7"></i>
+                </div>
+                <div class="font-extrabold text-base">Internet / WWW</div>
+                <div class="text-xs text-sky-100 mt-1">Hạt nhân kết nối thông tin toàn cầu</div>
+              </button>
+
+              <!-- Cột phải: Mạng di động 6G & IoT -->
+              <div class="space-y-3">
+                <button onclick="showDiagramDetail(5, 'Mạng Di Động & 6G (Tầm nhìn tương lai)', 'Công nghệ truyền thông không dây tốc độ siêu cao, độ trễ cực thấp, mở đường cho trí tuệ nhân tạo phân tán và thực tế ảo thời gian thực.')"
+                  class="diagram-node w-full p-4 rounded-2xl bg-indigo-50/90 dark:bg-indigo-950/50 border-2 border-indigo-200 dark:border-indigo-800 hover:border-indigo-500 text-left flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0">
+                    <i data-lucide="radio" class="w-5 h-5"></i>
+                  </div>
+                  <div>
+                    <div class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white">Mạng Di Động & 6G</div>
+                    <div class="text-[11px] text-slate-500 dark:text-slate-400">(Tầm nhìn tương lai)</div>
+                  </div>
+                </button>
+
+                <button onclick="showDiagramDetail(5, 'IoT (Internet vạn vật - Kết nối vật lý)', 'Biến mọi đồ vật vật lý (cảm biến, đèn giao thông, xe tự lái, thiết bị gia dụng) thành thiết bị số có khả năng thu thập và trao đổi dữ liệu.')"
+                  class="diagram-node w-full p-4 rounded-2xl bg-teal-50/90 dark:bg-teal-950/50 border-2 border-teal-200 dark:border-teal-800 hover:border-teal-500 text-left flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center shrink-0">
+                    <i data-lucide="cpu" class="w-5 h-5"></i>
+                  </div>
+                  <div>
+                    <div class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white">IoT (Internet vạn vật)</div>
+                    <div class="text-[11px] text-slate-500 dark:text-slate-400">(Kết nối vật lý)</div>
+                  </div>
+                </button>
+              </div>
+            </div>
+          `;
+
+        case 6:
+          return `
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+              <!-- Cột trái: 3 Bước Tư duy lập trình -->
+              <div class="lg:col-span-6 p-4 rounded-2xl bg-slate-100/80 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2.5">
+                <div class="text-xs font-extrabold uppercase tracking-wider text-sky-600 dark:text-sky-400 mb-2">
+                  Quy trình Tư duy Lập trình
+                </div>
+                <button onclick="showDiagramDetail(6, 'Bước 1: Nhìn thấu bản chất', 'Phân tích bài toán phức tạp thành các thành phần cốt lõi, loại bỏ yếu tố gây nhiễu để hiểu đúng vấn đề cần giải quyết.')"
+                  class="diagram-node w-full p-3.5 rounded-xl bg-cyan-500 text-white font-bold text-sm flex items-center gap-3 shadow-xs">
+                  <i data-lucide="eye" class="w-5 h-5 shrink-0"></i>
+                  <span>1. Nhìn thấu bản chất</span>
+                </button>
+                <div class="flex justify-center text-sky-500"><i data-lucide="arrow-down" class="w-4 h-4"></i></div>
+                <button onclick="showDiagramDetail(6, 'Bước 2: Tìm sự tương đồng', 'Nhận diện các quy luật lặp lại hoặc mẫu bài toán đã biết để tái sử dụng giải pháp tối ưu.')"
+                  class="diagram-node w-full p-3.5 rounded-xl bg-sky-500 text-white font-bold text-sm flex items-center gap-3 shadow-xs">
+                  <i data-lucide="scan-line" class="w-5 h-5 shrink-0"></i>
+                  <span>2. Tìm sự tương đồng</span>
+                </button>
+                <div class="flex justify-center text-sky-500"><i data-lucide="arrow-down" class="w-4 h-4"></i></div>
+                <button onclick="showDiagramDetail(6, 'Bước 3: Viết chỉ dẫn chính xác (Step-by-step)', 'Xây dựng thuật toán rõ ràng, rành mạch từng bước để máy tính thực thi chính xác và khuếch đại trí tuệ con người.')"
+                  class="diagram-node w-full p-3.5 rounded-xl bg-indigo-600 text-white font-bold text-sm flex items-center gap-3 shadow-xs">
+                  <i data-lucide="list-ordered" class="w-5 h-5 shrink-0"></i>
+                  <span>3. Viết chỉ dẫn chính xác (Step-by-step)</span>
+                </button>
+              </div>
+
+              <!-- Cột phải: 3 Phân lớp Tự động hóa -->
+              <div class="lg:col-span-6 p-4 rounded-2xl bg-slate-100/80 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex flex-col justify-between space-y-2.5">
+                <div class="text-xs font-extrabold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 mb-1">
+                  3 Phân lớp Tự động hóa
+                </div>
+                <button onclick="showDiagramDetail(6, 'BPA: Cấp độ Doanh nghiệp (Business Process Automation)', 'Tự động hóa luồng nghiệp vụ xuyên suốt giữa các phòng ban trong tổ chức để tối ưu vận hành tổng thể.')"
+                  class="diagram-node w-full p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 text-left flex items-center justify-between">
+                  <div>
+                    <div class="font-bold text-sm text-slate-900 dark:text-white">BPA: Cấp độ Doanh nghiệp</div>
+                    <div class="text-xs text-slate-500 dark:text-slate-400">Tự động hóa quy trình nghiệp vụ tổng thể</div>
+                  </div>
+                  <span class="px-2.5 py-1 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-mono text-xs font-bold">BPA</span>
+                </button>
+
+                <button onclick="showDiagramDetail(6, 'RPA: Cấp độ Ứng dụng (Robotic Process Automation)', 'Sử dụng robot phần mềm mô phỏng thao tác người dùng trên giao diện ứng dụng để xử lý các tác vụ lặp lại.')"
+                  class="diagram-node w-full p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-sky-500 text-left flex items-center justify-between">
+                  <div>
+                    <div class="font-bold text-sm text-slate-900 dark:text-white">RPA: Cấp độ Ứng dụng (Robot)</div>
+                    <div class="text-xs text-slate-500 dark:text-slate-400">Robot phần mềm tự động thao tác lặp lại</div>
+                  </div>
+                  <span class="px-2.5 py-1 rounded-lg bg-sky-500/10 text-sky-600 dark:text-sky-400 font-mono text-xs font-bold">RPA</span>
+                </button>
+
+                <button onclick="showDiagramDetail(6, 'IaC: Cấp độ Hạ tầng (Infrastructure as Code)', 'Quản lý và cấp phát máy chủ, mạng, hạ tầng Cloud tự động thông qua các tệp mã nguồn thay vì cấu hình thủ công.')"
+                  class="diagram-node w-full p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-teal-500 text-left flex items-center justify-between">
+                  <div>
+                    <div class="font-bold text-sm text-slate-900 dark:text-white">IaC: Cấp độ Hạ tầng (Code)</div>
+                    <div class="text-xs text-slate-500 dark:text-slate-400">Khởi tạo và quản lý hạ tầng bằng mã nguồn</div>
+                  </div>
+                  <span class="px-2.5 py-1 rounded-lg bg-teal-500/10 text-teal-600 dark:text-teal-400 font-mono text-xs font-bold">IaC</span>
+                </button>
+              </div>
+            </div>
+          `;
+
+        case 7:
+          return `
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <button onclick="showDiagramDetail(7, 'Nhiên liệu (Fuel): Dữ liệu lớn (Big Data)', 'Big Data là nguồn nguyên liệu thô vô giá của thời đại 4.0. Dữ liệu càng sạch, giàu có và bền vững thì hệ thống AI vận hành càng chính xác.')"
+                class="diagram-node p-4 rounded-2xl bg-amber-50/90 dark:bg-amber-950/40 border-2 border-amber-200 dark:border-amber-800/80 hover:border-amber-500 text-left flex flex-col justify-between">
+                <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center mb-3">
+                  <i data-lucide="database" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <div class="text-[11px] font-extrabold uppercase text-amber-600 dark:text-amber-400">Nhiên liệu (Fuel)</div>
+                  <div class="font-bold text-sm text-slate-900 dark:text-white mt-0.5">Dữ liệu lớn (Big Data)</div>
+                </div>
+              </button>
+
+              <button onclick="showDiagramDetail(7, 'Động cơ (Engine): Lõi AI', 'Trí tuệ nhân tạo đóng vai trò là khối động cơ trung tâm, tiếp nhận nhiên liệu dữ liệu để học hỏi, suy luận và chuyển hóa thành giá trị hữu ích.')"
+                class="diagram-node p-4 rounded-2xl bg-gradient-to-br from-sky-500 to-indigo-600 text-white shadow-lg shadow-sky-500/20 text-left flex flex-col justify-between">
+                <div class="w-10 h-10 rounded-xl bg-white/20 text-white flex items-center justify-center mb-3">
+                  <i data-lucide="cpu" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <div class="text-[11px] font-extrabold uppercase text-sky-100">Động cơ (Engine)</div>
+                  <div class="font-bold text-sm text-white mt-0.5">Lõi AI</div>
+                </div>
+              </button>
+
+              <button onclick="showDiagramDetail(7, 'Vô-lăng: Chính sách Lấy Con Người Làm Trung Tâm', 'Công nghệ mạnh mẽ cần có tay lái chuẩn xác. Chính sách lấy con người làm trung tâm đảm bảo AI phục vụ lợi ích, an toàn và giá trị nhân văn của xã hội.')"
+                class="diagram-node p-4 rounded-2xl bg-violet-50/90 dark:bg-violet-950/40 border-2 border-violet-200 dark:border-violet-800/80 hover:border-violet-500 text-left flex flex-col justify-between">
+                <div class="w-10 h-10 rounded-xl bg-violet-600 text-white flex items-center justify-center mb-3">
+                  <i data-lucide="compass" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <div class="text-[11px] font-extrabold uppercase text-violet-600 dark:text-violet-400">Vô-lăng điều hướng</div>
+                  <div class="font-bold text-sm text-slate-900 dark:text-white mt-0.5">Chính sách Lấy Con Người Làm Trung Tâm</div>
+                </div>
+              </button>
+
+              <button onclick="showDiagramDetail(7, 'Lực đẩy (Output): Phát triển bền vững', 'Kết quả đầu ra của cỗ máy AI là năng suất vượt trội, đổi mới sáng tạo và sự phát triển bền vững cho tổ chức lẫn quốc gia.')"
+                class="diagram-node p-4 rounded-2xl bg-emerald-50/90 dark:bg-emerald-950/40 border-2 border-emerald-200 dark:border-emerald-800/80 hover:border-emerald-500 text-left flex flex-col justify-between">
+                <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center mb-3">
+                  <i data-lucide="rocket" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <div class="text-[11px] font-extrabold uppercase text-emerald-600 dark:text-emerald-400">Lực đẩy (Output)</div>
+                  <div class="font-bold text-sm text-slate-900 dark:text-white mt-0.5">Phát triển bền vững</div>
+                </div>
+              </button>
+            </div>
+          `;
+
+        case 8:
+          return `
+            <div class="p-3 sm:p-5 rounded-3xl bg-slate-100/90 dark:bg-slate-800/70 border-2 border-slate-300 dark:border-slate-700 space-y-3">
+              <!-- Vòng ngoài cùng -->
+              <div class="flex items-center justify-between px-2">
+                <button onclick="showDiagramDetail(8, 'Vòng 1 (Ngoài cùng): Hành lang pháp lý - Bảo vệ không gian mạng', 'Hệ thống luật pháp Việt Nam gồm Luật An ninh mạng, Luật AI và Luật Bảo vệ dữ liệu cá nhân tạo khung pháp lý bảo vệ tổ chức và công dân.')"
+                  class="text-left text-xs font-extrabold text-slate-700 dark:text-slate-200 hover:text-sky-600 flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-slate-500"></span>
+                  Vòng 1: Hành lang pháp lý - Bảo vệ không gian mạng
+                </button>
+                <span class="text-[10px] font-mono text-slate-400">Lớp ngoài</span>
+              </div>
+
+              <!-- Vòng 2 -->
+              <div class="p-3 sm:p-4 rounded-2xl bg-sky-100/80 dark:bg-sky-950/60 border-2 border-sky-300 dark:border-sky-800 space-y-3">
+                <button onclick="showDiagramDetail(8, 'Vòng 2: Đạo đức số - Chống Deepfake', 'Nâng cao nhận thức, trách nhiệm số khi ứng xử trên mạng và trang bị kỹ năng nhận diện, đối phó với công nghệ giả mạo Deepfake.')"
+                  class="text-left text-xs font-extrabold text-sky-800 dark:text-sky-300 hover:underline flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
+                  Vòng 2: Đạo đức số - Chống Deepfake
+                </button>
+
+                <!-- Vòng 3 -->
+                <div class="p-3 sm:p-4 rounded-2xl bg-indigo-100/80 dark:bg-indigo-950/70 border-2 border-indigo-300 dark:border-indigo-700 space-y-3">
+                  <button onclick="showDiagramDetail(8, 'Vòng 3: ISMS (ISO 27000) - Quản lý rủi ro', 'Hệ thống quản lý an toàn thông tin bài bản dựa trên đánh giá rủi ro liên tục, phân công trách nhiệm rõ ràng và cải tiến không ngừng.')"
+                    class="text-left text-xs font-extrabold text-indigo-800 dark:text-indigo-300 hover:underline flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+                    Vòng 3: ISMS (ISO 27000) - Quản lý rủi ro
+                  </button>
+
+                  <!-- Lõi trung tâm: Tam giác CIA -->
+                  <button onclick="showDiagramDetail(8, 'Lõi trung tâm: Khiên Tam giác CIA', '3 trụ cột cốt lõi của An toàn thông tin: Confidentiality (Tính bảo mật) – Integrity (Tính toàn vẹn) – Availability (Tính sẵn sàng).')"
+                    class="diagram-node w-full p-4 rounded-xl bg-gradient-to-r from-rose-600 via-orange-600 to-amber-600 text-white shadow-lg flex items-center justify-center gap-3">
+                    <i data-lucide="shield" class="w-6 h-6 shrink-0"></i>
+                    <div class="text-left">
+                      <div class="font-extrabold text-sm">Lõi trung tâm: Tam giác CIA</div>
+                      <div class="text-[11px] text-orange-100">Confidentiality (Bảo mật) • Integrity (Toàn vẹn) • Availability (Sẵn sàng)</div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+      }
+    }
+
+    // Render Bức Tranh Toàn Cảnh IT 4.0 (Trang 10 của PDF)
+    function renderOverviewPage() {
+      document.getElementById('breadcrumbCurrent').textContent = 'Bức tranh toàn cảnh IT 4.0';
+      document.getElementById('prevBtn').disabled = true;
+      document.getElementById('nextBtn').disabled = false;
+
+      const completedCount = appState.completedIds.length;
+
+      return `
+        <div class="space-y-8 animate-content">
+          <!-- Hero Banner Tổng Quan -->
+          <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 text-white p-6 sm:p-10 shadow-xl border border-slate-700/60">
+            <div class="relative z-10 max-w-3xl space-y-4">
+              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/20 border border-sky-400/30 text-sky-300 text-xs font-bold tracking-wide uppercase">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                Tổng hợp kiến thức toàn diện • Bài 1 – Bài 8
+              </div>
+              <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight">
+                Bức Tranh Toàn Cảnh <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-cyan-300">IT 4.0</span>
+              </h2>
+              <p class="text-sm sm:text-base text-slate-300 leading-relaxed">
+                Từ nền tảng phần cứng đến trí tuệ nhân tạo & đạo đức số. Nhấp vào từng tầng kiến thức bên dưới để đi sâu vào chuyên đề tương ứng.
+              </p>
+              <div class="pt-2 flex flex-wrap items-center gap-3">
+                <button onclick="selectView(1)" class="px-5 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-sky-500/25 transition-all">
+                  <i data-lucide="play" class="w-4 h-4 fill-current"></i>
+                  Bắt đầu từ Bài 1
+                </button>
+                <div class="px-4 py-2.5 rounded-xl bg-white/10 border border-white/10 text-xs font-semibold text-slate-200">
+                  Đã hoàn thành: <span class="text-sky-400 font-bold">${completedCount}/8</span> chuyên đề
+                </div>
+              </div>
+            </div>
+            <!-- Decor circles -->
+            <div class="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-sky-500/10 blur-2xl pointer-events-none"></div>
+            <div class="absolute right-10 -bottom-20 w-72 h-72 rounded-full bg-indigo-500/20 blur-3xl pointer-events-none"></div>
+          </section>
+
+          <!-- Mô hình Tháp 8 Tầng Kiến Thức -->
+          <section class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-4">
+              <div>
+                <h3 class="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                  <i data-lucide="layers" class="w-5 h-5 text-sky-500"></i>
+                  Kiến Trúc 8 Tầng Tri Thức Công Nghệ 4.0
+                </h3>
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+                  Xếp chồng từ Nền tảng lịch sử (Tầng 1) lên đỉnh cao Quản trị & Đạo đức số (Tầng 8)
+                </p>
+              </div>
+              <span class="text-xs font-semibold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 px-3 py-1.5 rounded-xl border border-sky-200/60 dark:border-sky-800/60 self-start">
+                Nhấp từng tầng để mở bài học
+              </span>
+            </div>
+
+            <div class="space-y-2.5">
+              ${OVERVIEW_LAYERS.map(layer => {
+                const isDone = appState.completedIds.includes(layer.lessonId);
+                return `
+                  <button
+                    onclick="selectView(${layer.lessonId})"
+                    class="diagram-node w-full group relative overflow-hidden rounded-2xl p-4 sm:px-6 sm:py-4 bg-slate-50/90 hover:bg-white dark:bg-slate-800/70 dark:hover:bg-slate-800 border border-slate-200/90 dark:border-slate-700/80 hover:border-sky-400 dark:hover:border-sky-500 shadow-2xs hover:shadow-md flex items-center justify-between gap-4 text-left"
+                  >
+                    <div class="flex items-center gap-4 min-w-0">
+                      <div class="w-10 h-10 rounded-xl bg-gradient-to-br ${layer.color} text-white font-extrabold text-sm flex items-center justify-center shrink-0 shadow-xs">
+                        T${layer.level}
+                      </div>
+                      <div class="min-w-0">
+                        <div class="flex items-center gap-2 flex-wrap">
+                          <span class="font-bold text-sm sm:text-base text-slate-900 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
+                            ${layer.title}
+                          </span>
+                          ${isDone
+                            ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+                                 <i data-lucide="check-circle-2" class="w-3 h-3"></i> Đã xong
+                               </span>`
+                            : ''
+                          }
+                        </div>
+                        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-0.5">
+                          ${layer.desc}
+                        </p>
+                      </div>
+                    </div>
+                    <div class="w-8 h-8 rounded-xl bg-slate-200/60 dark:bg-slate-700/60 group-hover:bg-sky-500 group-hover:text-white text-slate-500 dark:text-slate-400 flex items-center justify-center shrink-0 transition-colors">
+                      <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                    </div>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+
+            <!-- Thông điệp tổng kết ở đáy (Trang 10 PDF) -->
+            <div class="mt-6 p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-sky-50 via-cyan-50/70 to-indigo-50 dark:from-sky-950/50 dark:via-slate-800/80 dark:to-indigo-950/50 border border-sky-200/80 dark:border-sky-800/70 flex items-start gap-4">
+              <div class="w-10 h-10 rounded-xl bg-sky-500 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
+                <i data-lucide="quote" class="w-5 h-5"></i>
+              </div>
+              <p class="text-sm sm:text-base font-semibold text-slate-800 dark:text-slate-100 leading-relaxed italic">
+                “Công nghệ 4.0 không chỉ là thiết bị hay phần mềm, mà là sự hội tụ tinh hoa từ phần cứng đến tư duy máy học, được vận hành bởi đạo đức số và phục vụ sự phát triển của con người.”
+              </p>
+            </div>
+          </section>
+        </div>
+      `;
+    }
+
+    // Render Chi tiết Chuyên đề (Bài 1 - Bài 8)
+    function renderLessonPage(lessonId) {
+      const lesson = LESSONS_DATA.find(l => l.id === Number(lessonId)) || LESSONS_DATA[0];
+      const isDone = appState.completedIds.includes(lesson.id);
+      const savedNote = appState.notes[lesson.id] || '';
+
+      document.getElementById('breadcrumbCurrent').textContent = `Bài ${lesson.id}: ${lesson.shortTitle}`;
+      document.getElementById('prevBtn').disabled = false;
+      document.getElementById('nextBtn').disabled = lesson.id >= 8;
+
+      // Phần mở rộng cho Case Study nếu có bảng/so sánh/công thức
+      let extraCaseHTML = '';
+      if (lesson.caseStudy.comparison) {
+        extraCaseHTML = `
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+            ${lesson.caseStudy.comparison.map(item => `
+              <div class="p-4 rounded-2xl bg-white/80 dark:bg-slate-900/80 border border-amber-200/80 dark:border-amber-800/60">
+                <div class="font-bold text-xs sm:text-sm text-amber-800 dark:text-amber-300 mb-1">${item.label}</div>
+                <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">${item.desc}</p>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      } else if (lesson.caseStudy.table) {
+        extraCaseHTML = `
+          <div class="mt-4 overflow-hidden rounded-2xl border border-amber-200/80 dark:border-amber-800/60 bg-white/90 dark:bg-slate-900/90">
+            <table class="w-full text-left text-xs sm:text-sm">
+              <tbody class="divide-y divide-amber-100 dark:divide-slate-800">
+                ${lesson.caseStudy.table.map(row => `
+                  <tr>
+                    <td class="py-3 px-4 font-extrabold text-amber-700 dark:text-amber-400 w-24 bg-amber-50/60 dark:bg-amber-950/30">${row.tier}</td>
+                    <td class="py-3 px-4 text-slate-700 dark:text-slate-200">${row.example}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } else if (lesson.caseStudy.formula) {
+        extraCaseHTML = `
+          <div class="mt-4 flex flex-wrap items-center gap-2">
+            ${lesson.caseStudy.formula.map((part, i) => `
+              <span class="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-amber-300 dark:border-amber-700 font-bold text-xs text-amber-800 dark:text-amber-300 shadow-2xs">
+                ${part}
+              </span>
+              ${i < lesson.caseStudy.formula.length - 1 ? '<span class="font-extrabold text-amber-600">+</span>' : ''}
+            `).join('')}
+          </div>
+        `;
+      }
+
+      return `
+        <div class="space-y-7 animate-content">
+          <!-- 1. Hero Banner Chuyên đề -->
+          <section class="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-6 sm:p-8 shadow-xs">
+            <div class="flex flex-col md:flex-row md:items-start justify-between gap-6">
+              <div class="space-y-3 max-w-2xl">
+                <div class="flex items-center gap-2.5 flex-wrap">
+                  <span class="px-3 py-1 rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20 text-xs font-extrabold tracking-wider uppercase">
+                    BÀI ${lesson.id} / 8
+                  </span>
+                  <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                    ${lesson.subtitle}
+                  </span>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-snug">
+                  ${lesson.title}
+                </h2>
+                <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
+                  ${lesson.summary}
+                </p>
+              </div>
+
+              <!-- Nút Đánh dấu hoàn thành -->
+              <div class="shrink-0">
+                <button
+                  onclick="toggleLessonComplete(${lesson.id})"
+                  class="w-full md:w-auto px-5 py-3 rounded-2xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-sm ${
+                    isDone
+                      ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-500/25'
+                      : 'bg-slate-900 hover:bg-sky-600 dark:bg-sky-500 dark:hover:bg-sky-400 text-white dark:text-slate-950'
+                  }"
+                >
+                  <i data-lucide="${isDone ? 'check-circle-2' : 'circle'}" class="w-4 h-4"></i>
+                  <span>${isDone ? 'Đã hoàn thành ✓' : 'Đánh dấu đã hoàn thành'}</span>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- 2. Sơ đồ Trực quan & Mô hình Cốt lõi -->
+          <section class="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-6 sm:p-8 shadow-xs space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <h3 class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                  <i data-lucide="git-fork" class="w-5 h-5 text-sky-500"></i>
+                  ${lesson.diagramTitle}
+                </h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1.5">
+                  <i data-lucide="mouse-pointer-click" class="w-3.5 h-3.5 text-sky-500"></i>
+                  ${lesson.diagramHint}
+                </p>
+              </div>
+            </div>
+
+            <!-- Interactive Visual Diagram -->
+            <div class="pt-1">
+              ${renderInteractiveDiagram(lesson.id)}
+            </div>
+
+            <!-- Hộp giải thích động khi click node -->
+            <div id="diagram-detail-${lesson.id}" class="p-4 rounded-2xl bg-sky-50/70 dark:bg-sky-950/40 border border-sky-200/70 dark:border-sky-800/60">
+              <div class="flex items-center gap-2.5 text-xs text-sky-700 dark:text-sky-300 font-medium">
+                <i data-lucide="sparkles" class="w-4 h-4 shrink-0"></i>
+                <span>Mẹo học tập: Nhấp vào bất kỳ khối nào trong sơ đồ phía trên để xem phân tích chi tiết.</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- 3. 5 Điểm Ghi Nhớ Cốt Lõi -->
+          <section class="space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                <i data-lucide="bookmark-check" class="w-5 h-5 text-sky-500"></i>
+                5 Điểm Ghi Nhớ (Bài ${lesson.id})
+              </h3>
+              <span class="text-xs font-semibold text-slate-400">Kiến thức trọng tâm</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              ${lesson.takeaways.map((point, index) => `
+                <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-sky-400 dark:hover:border-sky-600 transition-all shadow-2xs flex flex-col gap-3 ${index === 4 ? 'md:col-span-2 lg:col-span-1' : ''}">
+                  <div class="flex items-center justify-between">
+                    <span class="w-8 h-8 rounded-xl bg-gradient-to-br from-sky-500 to-cyan-500 text-white font-extrabold text-sm flex items-center justify-center shadow-xs">
+                      ${index + 1}
+                    </span>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Điểm #${index + 1}</span>
+                  </div>
+                  <p class="text-sm font-medium text-slate-800 dark:text-slate-100 leading-relaxed">
+                    ${point}
+                  </p>
+                </div>
+              `).join('')}
+            </div>
+          </section>
+
+          <!-- 4. Ví Dụ Thực Tế Ứng Dụng -->
+          <section class="rounded-3xl bg-gradient-to-br from-amber-50/90 via-orange-50/50 to-yellow-50/80 dark:from-amber-950/30 dark:via-slate-900 dark:to-orange-950/20 border border-amber-200/80 dark:border-amber-800/60 p-6 sm:p-8 shadow-xs">
+            <div class="flex items-start gap-4">
+              <div class="w-11 h-11 rounded-2xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-md shadow-amber-500/20">
+                <i data-lucide="lightbulb" class="w-6 h-6"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider text-amber-700 dark:text-amber-400 mb-1">
+                  Ví dụ thực tế • ${lesson.caseStudy.tag}
+                </div>
+                <h4 class="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white">
+                  ${lesson.caseStudy.title}
+                </h4>
+                <p class="mt-2.5 text-sm sm:text-base text-slate-700 dark:text-slate-200 leading-relaxed">
+                  ${lesson.caseStudy.content}
+                </p>
+                ${extraCaseHTML}
+              </div>
+            </div>
+          </section>
+
+          <!-- 5. Khu vực Ghi Chú Cá Nhân -->
+          <section class="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-6 sm:p-8 shadow-xs space-y-3">
+            <div class="flex items-center justify-between gap-2">
+              <label for="noteInput-${lesson.id}" class="text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                <i data-lucide="notebook-pen" class="w-5 h-5 text-indigo-500"></i>
+                Ghi chú cá nhân (Bài ${lesson.id})
+              </label>
+              <span id="noteSaveStatus" class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 opacity-80">
+                <i data-lucide="check" class="w-3.5 h-3.5"></i> Đã lưu tự động
+              </span>
+            </div>
+            <textarea
+              id="noteInput-${lesson.id}"
+              rows="4"
+              oninput="handleNoteInput(${lesson.id}, this.value)"
+              placeholder="Ghi lại ý tưởng, câu hỏi ôn tập hoặc ví dụ mở rộng của riêng bạn cho Bài ${lesson.id}..."
+              class="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 focus:border-sky-500 focus:bg-white dark:focus:bg-slate-900 outline-none text-sm text-slate-800 dark:text-slate-100 placeholder:text-slate-400 transition-all leading-relaxed"
+            >${escapeHTML(savedNote)}</textarea>
+          </section>
+        </div>
+      `;
+    }
+
+    // Hiển thị kết quả tìm kiếm nhanh trên vùng nội dung chính
+    function renderSearchResultsBanner() {
+      const main = document.getElementById('mainContent');
+      const query = appState.searchQuery.toLowerCase();
+
+      const matches = LESSONS_DATA.filter(lesson => {
+        const text = [
+          lesson.title,
+          lesson.subtitle,
+          ...lesson.takeaways,
+          lesson.caseStudy.title,
+          lesson.caseStudy.content
+        ].join(' ').toLowerCase();
+        return text.includes(query);
+      });
+
+      main.innerHTML = `
+        <div class="space-y-6 animate-content">
+          <div class="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div class="text-xs font-bold uppercase text-sky-600 dark:text-sky-400">Kết quả tìm kiếm</div>
+              <h2 class="text-xl font-extrabold text-slate-900 dark:text-white mt-1">
+                Tìm thấy ${matches.length} chuyên đề khớp với “${escapeHTML(appState.searchQuery)}”
+              </h2>
+            </div>
+            <button onclick="clearSearch()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 self-start">
+              Xóa tìm kiếm
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            ${matches.map(lesson => `
+              <div onclick="clearSearch(); selectView(${lesson.id});" class="cursor-pointer p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-sky-500 transition-all shadow-2xs space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="px-2.5 py-0.5 rounded-lg bg-sky-500/10 text-sky-600 dark:text-sky-400 text-xs font-bold">Bài ${lesson.id}</span>
+                  <span class="text-xs text-sky-600 dark:text-sky-400 font-semibold flex items-center gap-1">Xem bài <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></span>
+                </div>
+                <h3 class="font-bold text-base text-slate-900 dark:text-white">${lesson.title}</h3>
+                <p class="text-xs text-slate-600 dark:text-slate-300 line-clamp-2">${lesson.caseStudy.title}: ${lesson.caseStudy.content}</p>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+      lucide.createIcons();
+    }
+
+    // Lưu ghi chú tự động
+    let noteTimeout = null;
+    function handleNoteInput(lessonId, value) {
+      appState.notes[lessonId] = value;
+      const statusEl = document.getElementById('noteSaveStatus');
+      if (statusEl) {
+        statusEl.innerHTML = `<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i> Đang lưu...`;
+        lucide.createIcons();
+      }
+      clearTimeout(noteTimeout);
+      noteTimeout = setTimeout(() => {
+        saveState();
+        if (statusEl) {
+          statusEl.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5"></i> Đã lưu tự động`;
+          lucide.createIcons();
+        }
+      }, 300);
+    }
+
+    // Modal Đặt lại dữ liệu
+    function openResetModal() {
+      const modal = document.getElementById('resetModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeResetModal() {
+      const modal = document.getElementById('resetModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function confirmResetData() {
+      appState.completedIds = [];
+      appState.notes = {};
+      saveState();
+      closeResetModal();
+      updateProgressUI();
+      renderSidebarList();
+      renderMainContent();
+    }
+
+    // Render nội dung chính dựa trên currentView
+    function renderMainContent() {
+      const main = document.getElementById('mainContent');
+      if (appState.currentView === 'overview') {
+        main.innerHTML = renderOverviewPage();
+      } else {
+        main.innerHTML = renderLessonPage(appState.currentView);
+      }
+      lucide.createIcons();
+    }
+
+    function escapeHTML(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // Khởi chạy ứng dụng khi tải trang
+    window.addEventListener('DOMContentLoaded', () => {
+      loadState();
+      updateProgressUI();
+      renderSidebarList();
+      renderMainContent();
+    });
+  </script>
+</body>
+</html>
